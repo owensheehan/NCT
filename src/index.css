@@ -447,6 +447,35 @@ button, input, select {
   z-index: 990;
 }
 
+.synthetic-disclaimer-ribbon {
+  background: #172554;
+  border-bottom: 1px solid #1e40af;
+  padding: 4px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.72rem;
+  color: #bfdbfe;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+.disclaimer-chip {
+  background: #ef4444;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+}
+
+.disclaimer-msg {
+  font-weight: 500;
+}
+
 .ticker-bar {
   background: #090e18;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);

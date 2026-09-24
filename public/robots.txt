@@ -1,0 +1,4 @@
+# Synthetic Software Testing Benchmark & Compliance AI Testbed
+# This site is not a real financial institution.
+User-agent: *
+Disallow: /

@@ -107,7 +107,7 @@ export const Footer: React.FC<FooterProps> = ({
       <div className="footer-bottom">
         <div className="footer-bottom-container">
           <p className="copyright-text">
-            © {currentYear} Apex Horizon Bank N.A. All rights reserved. Operating under US National Bank Charter #88412-B.
+            © {currentYear} Apex Horizon Bank (Synthetic Entity) • Created exclusively as a software testing benchmark for the Nucomply Automated AI Compliance Inspection Platform. Not a real financial institution. No real deposits, loans, or financial products are offered.
           </p>
           <div className="footer-meta-tags">
             <span>Security Encrypted 256-bit SSL</span>

@@ -32,11 +32,19 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
 
   return (
     <header className="navbar-wrapper">
+      {/* Synthetic Benchmark Safety Disclaimer Ribbon */}
+      <div className="synthetic-disclaimer-ribbon">
+        <span className="disclaimer-chip">⚠️ SYNTHETIC TESTBED</span>
+        <span className="disclaimer-msg">
+          Apex Horizon Bank is a fictional benchmark created exclusively for testing automated AI compliance inspection software (Nucomply). Not a real financial institution.
+        </span>
+      </div>
+
       {/* Live Financial Rates Ticker Sub-bar */}
       <div className="ticker-bar">
         <div className="ticker-label">
           <TrendingUp size={12} className="inline mr-1 text-emerald-400" />
-          <span>LIVE MARKET RATES:</span>
+          <span>SIMULATED MARKET RATES:</span>
         </div>
         <div className="ticker-scroll">
           <div className="ticker-track">
@@ -60,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
             </div>
             <div className="brand-text">
               <span className="brand-title">APEX HORIZON</span>
-              <span className="brand-subtitle">BANK & TRUST • N.A.</span>
+              <span className="brand-subtitle">BANK & TRUST • SIMULATED TESTBED</span>
             </div>
           </Link>
 
@@ -81,12 +89,12 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
           </ul>
 
           <div className="nav-actions">
-            <Link to="/mortgages" className="nav-btn-secondary">
+            <Link to="/test-generator" className="nav-btn-secondary" title="View Automated Compliance Test Matrix">
               <Lock size={13} className="inline mr-1 text-slate-400" />
-              <span>Lock Rate</span>
+              <span>Test Matrix</span>
             </Link>
-            <Link to="/savings" className="nav-btn-primary">
-              <span>Open Account</span>
+            <Link to="/test-generator" className="nav-btn-primary" title="Synthetic Compliance Simulation Only">
+              <span>Simulation Portal</span>
               <ChevronRight size={14} className="inline ml-1" />
             </Link>
           </div>
