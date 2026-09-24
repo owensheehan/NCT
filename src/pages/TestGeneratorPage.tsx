@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import type { TestCaseWithQr, TestSuiteExport } from '../types/testSuite.ts';
 import {
   buildTestSuiteWithQrs,
@@ -6,6 +7,10 @@ import {
   exportTestSuiteCsv,
   printTestSheetHtml,
 } from '../utils/testSuiteGenerator.ts';
+import {
+  buildAllAdvertDocuments,
+  printAdvertBookletHtml,
+} from '../utils/advertGenerator.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
@@ -21,6 +26,8 @@ import {
   Layers,
   Sparkles,
   FileSpreadsheet,
+  FileText,
+  BookOpen,
 } from 'lucide-react';
 
 export const TestGeneratorPage: React.FC = (): React.ReactNode => {
@@ -95,6 +102,18 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const [printingAdverts, setPrintingAdverts] = useState<boolean>(false);
+
+  const handlePrintAllAdverts = async (): Promise<void> => {
+    setPrintingAdverts(true);
+    try {
+      const docs = await buildAllAdvertDocuments(baseUrl);
+      printAdvertBookletHtml(docs, baseUrl);
+    } finally {
+      setPrintingAdverts(false);
+    }
   };
 
   return (
@@ -202,6 +221,17 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
               <div className="exports-group">
                 <button
                   type="button"
+                  className="export-btn export-btn-booklet"
+                  onClick={handlePrintAllAdverts}
+                  disabled={printingAdverts}
+                  title="Generate and print full booklet of individual advert documents for all test cases"
+                >
+                  <BookOpen size={15} />
+                  <span>{printingAdverts ? 'Building Booklet...' : 'Print All Adverts Booklet'}</span>
+                </button>
+
+                <button
+                  type="button"
                   className="export-btn export-btn-primary"
                   onClick={(): void => exportTestSuiteJson(testSuiteExportData)}
                   title="Download test manifest with URLs and expected results for automated test runners"
@@ -303,6 +333,14 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
                           {tc.fullUrl}
                         </span>
                         <div className="tc-url-actions">
+                          <Link
+                            to={`/advert/${tc.id}`}
+                            className="tc-advert-link-btn"
+                            title="View dedicated marketing advert test document with QR code & discrepancies"
+                          >
+                            <FileText size={12} />
+                            <span>View Advert Doc</span>
+                          </Link>
                           <button
                             type="button"
                             className="tc-copy-btn"

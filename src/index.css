@@ -2659,4 +2659,634 @@ button, input, select {
   color: #ffffff;
 }
 
+.tc-advert-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(14, 165, 233, 0.15);
+  border: 1px solid rgba(14, 165, 233, 0.35);
+  color: #38bdf8;
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+}
+
+.tc-advert-link-btn:hover {
+  background: rgba(14, 165, 233, 0.3);
+  color: #ffffff;
+  border-color: #38bdf8;
+}
+
+.export-btn-booklet {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.3);
+}
+
+.export-btn-booklet:hover {
+  filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   ADVERT DOCUMENT VIEWER & TEST FLYER PAGE
+   ========================================================================== */
+
+.advert-controls-bar {
+  background: #090e18;
+  border-bottom: 1px solid var(--border-medium);
+  padding: 18px 24px;
+  position: sticky;
+  top: 96px;
+  z-index: 900;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.advert-controls-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.controls-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #38bdf8;
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.back-link:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+}
+
+.advert-pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.page-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #151f33;
+  border: 1px solid var(--border-medium);
+  color: #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.page-nav-btn:hover:not(:disabled) {
+  background: #1e2d4a;
+  color: #ffffff;
+}
+
+.page-nav-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.test-selector-dropdown {
+  background: #111a2e;
+  border: 1px solid var(--border-medium);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  max-width: 380px;
+  outline: none;
+}
+
+.test-selector-dropdown:focus {
+  border-color: var(--accent-cyan);
+}
+
+.controls-action-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.advert-status-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+}
+
+.outcome-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.outcome-pass {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.outcome-fail {
+  background: rgba(244, 63, 94, 0.18);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.meta-text {
+  color: #cbd5e1;
+}
+
+.controls-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  transition: all var(--transition-fast);
+}
+
+.ctrl-btn-reroll {
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid var(--border-medium);
+}
+
+.ctrl-btn-reroll:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.ctrl-btn-print {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+}
+
+.ctrl-btn-print:hover {
+  filter: brightness(1.1);
+}
+
+.ctrl-btn-launch {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-medium);
+  color: #cbd5e1;
+}
+
+.ctrl-btn-launch:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+/* Document Stage & Sheet Container */
+.advert-stage-section {
+  padding: 40px 24px;
+  background: #060a12;
+  min-height: calc(100vh - 350px);
+}
+
+.advert-stage-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.advert-presentation-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+/* Realistic Bank Advert Flyer Document */
+.advert-document-sheet {
+  width: 100%;
+  max-width: 820px;
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 12px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  padding: 44px 48px;
+  box-sizing: border-box;
+  position: relative;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+.sheet-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #0f172a;
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+}
+
+.sheet-bank-name {
+  font-size: 1.45rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: #0f172a;
+}
+
+.sheet-bank-sub {
+  font-size: 0.6875rem;
+  color: #059669;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}
+
+.sheet-header-meta {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sheet-status-tag {
+  display: inline-block;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.sheet-status-tag.tag-pass {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.sheet-status-tag.tag-fail {
+  background: #ffe4e6;
+  color: #9f1239;
+  border: 1px solid #fda4af;
+}
+
+.sheet-token-text {
+  font-size: 0.6875rem;
+  color: #64748b;
+  font-family: monospace;
+}
+
+.sheet-audit-callout {
+  background: #f0fdf4;
+  border-left: 4px solid #16a34a;
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin-bottom: 28px;
+}
+
+.sheet-audit-callout.callout-fail {
+  background: #fff1f2;
+  border-left-color: #e11d48;
+}
+
+.callout-title {
+  font-size: 0.75rem;
+  color: #0f172a;
+  font-family: monospace;
+  margin-bottom: 4px;
+}
+
+.callout-desc {
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.sheet-hero {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.sheet-campaign-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #0284c7;
+  margin-bottom: 8px;
+}
+
+.sheet-headline {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #0f172a;
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+.sheet-subheadline {
+  font-size: 0.95rem;
+  color: #475569;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+/* Featured Offer Rate Card */
+.sheet-rate-card {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  color: #ffffff;
+  border-radius: 10px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+}
+
+.rate-card-caption {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.rate-card-value {
+  font-size: 2.75rem;
+  font-weight: 900;
+  font-family: monospace;
+  color: #34d399;
+  margin: 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.rate-card-apr {
+  font-size: 0.875rem;
+  color: #cbd5e1;
+}
+
+.apr-omitted {
+  color: #fb7185;
+  font-weight: 700;
+}
+
+/* Content Grid: Benefits & QR */
+.sheet-content-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 28px;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 680px) {
+  .sheet-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-heading {
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #0f172a;
+  margin: 0 0 14px;
+  font-weight: 800;
+}
+
+.benefits-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8125rem;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.checkmark {
+  color: #059669;
+  font-weight: 900;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* QR Code Display Frame */
+.advert-qr-box {
+  background: #f8fafc;
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.qr-badge {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.advert-qr-image {
+  width: 150px;
+  height: 150px;
+  display: block;
+  margin: 0 auto 8px;
+  border-radius: 6px;
+  background: #ffffff;
+  padding: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.qr-url-display {
+  font-family: monospace;
+  font-size: 0.625rem;
+  color: #64748b;
+  word-break: break-all;
+  line-height: 1.35;
+  margin-bottom: 8px;
+}
+
+.qr-save-subbtn {
+  background: #0f172a;
+  color: #ffffff;
+  border: none;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.qr-save-subbtn:hover {
+  background: #1e293b;
+}
+
+/* Discrepancy Panels */
+.discrepancy-audit-panel {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 26px;
+}
+
+.discrepancy-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.discrepancy-panel-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #9f1239;
+}
+
+.discrepancy-panel-lead {
+  font-size: 0.75rem;
+  color: #881337;
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.discrepancy-items-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.75rem;
+  color: #9f1239;
+}
+
+.discrepancy-item {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.aligned-audit-panel {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin-bottom: 26px;
+}
+
+.aligned-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.aligned-panel-title {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #15803d;
+}
+
+.aligned-panel-lead {
+  font-size: 0.75rem;
+  color: #166534;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Sheet Footer Fine Print */
+.sheet-footer {
+  border-top: 1px solid #e2e8f0;
+  padding-top: 16px;
+}
+
+.fine-print-title {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: #475569;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.fine-print-body {
+  font-size: 0.6875rem;
+  color: #64748b;
+  line-height: 1.45;
+  margin: 0 0 12px;
+}
+
+.sheet-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.625rem;
+  color: #94a3b8;
+  font-family: monospace;
+}
+
+/* Print Overrides */
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+  .navbar, .compliance-audit-bar, .advert-controls-bar, .compliance-guidance-section, .footer-wrapper, .qr-save-subbtn {
+    display: none !important;
+  }
+  .advert-stage-section {
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+  .advert-document-sheet {
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+
 

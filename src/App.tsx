@@ -8,6 +8,7 @@ import { WealthPage } from './pages/WealthPage.tsx';
 import { BusinessLoansPage } from './pages/BusinessLoansPage.tsx';
 import { DisclosuresPage } from './pages/DisclosuresPage.tsx';
 import { TestGeneratorPage } from './pages/TestGeneratorPage.tsx';
+import { AdvertDocumentPage } from './pages/AdvertDocumentPage.tsx';
 
 const ScrollToTop: React.FC = (): null => {
   const { pathname } = useLocation();
@@ -32,6 +33,8 @@ export const App: React.FC = (): React.ReactNode => {
         <Route path="/business-loans" element={<BusinessLoansPage />} />
         <Route path="/disclosures" element={<DisclosuresPage />} />
         <Route path="/test-generator" element={<TestGeneratorPage />} />
+        <Route path="/advert/:testId" element={<AdvertDocumentPage />} />
+        <Route path="/advert" element={<AdvertDocumentPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </HashRouter>

@@ -27,3 +27,24 @@ export interface TestSuiteExport {
   failingTests: number;
   tests: TestCaseWithQr[];
 }
+
+export interface AdvertDocumentData {
+  testId: string;
+  testName: string;
+  vertical: string;
+  campaignTitle: string;
+  headline: string;
+  subheadline: string;
+  featuredOffer: string;
+  advertisedRate: string;
+  advertisedApr: string | null;
+  landingPageUrl: string;
+  qrDataUrl: string;
+  expectedOutcome: 'PASS' | 'FAIL';
+  alignmentStatus: 'ALIGNED_WITH_LANDING_PAGE' | 'CONFLICTING_RATES_OR_TERMS' | 'DECEPTIVE_ADVERT_CLAIMS';
+  discrepancies: string[];
+  bulletPoints: string[];
+  legalFinePrint: string;
+  advertToken: string;
+  publishedDate: string;
+}
