@@ -1,0 +1,168 @@
+import type {
+  ComplianceVariantId,
+  PageDynamicVariant,
+  WealthPageContent,
+} from '../types/compliance.ts';
+
+export const wealthVariants: Record<ComplianceVariantId, PageDynamicVariant<WealthPageContent>> = {
+  compliant: {
+    id: 'compliant',
+    label: 'Standard SEC / FINRA Investment Disclosure Compliance',
+    complianceRating: 'A (Fully Compliant)',
+    riskLevel: 'LOW',
+    summary: 'Full compliance with FINRA Rule 2210 & SEC guidelines: Prominent "Not FDIC Insured • No Bank Guarantee • May Lose Value" banner, past performance caveats, and transparent advisory fee schedules.',
+    flags: [],
+    content: {
+      heroHeadline: 'Fiduciary Wealth Advisory Tailored to Your Legacy',
+      heroSubheadline: 'Strategic asset allocation, private equity access, and disciplined portfolio management crafted for high-net-worth families and institutions.',
+      advisoryTitle: 'Apex Private Wealth Management LLC (SEC-Registered Investment Adviser)',
+      capitalAtRiskWarning: 'INVESTMENT PRODUCTS ARE: NOT FDIC INSURED • NOT BANK GUARANTEED • MAY LOSE VALUE • NOT INSURED BY ANY GOVERNMENT AGENCY',
+      secFinraDisclosure: 'Apex Horizon Private Wealth LLC is an SEC-registered investment adviser. Advisory services are provided pursuant to a written client agreement and Form ADV Part 2A brochure. Brokerage services offered through Apex Securities Inc., member FINRA/SIPC.',
+      pastPerformanceCaveat: 'Past performance is no guarantee of future results. Hypothetical or historical performance results have inherent limitations and do not represent actual client trading.',
+      portfolios: [
+        {
+          id: 'w-global-balanced',
+          strategyName: 'Apex Horizon Global Balanced Growth',
+          riskProfile: 'Balanced',
+          projectedReturnClaim: 'Long-term annualized target: 6.5% – 8.0% gross of advisory fees.',
+          historicalPerformanceSnippet: '10-Year Annualized Return: 7.42% vs 7.10% Morningstar Moderate Target Risk Index.',
+          guaranteeClaim: 'No return is guaranteed; asset value fluctuates with market conditions.',
+          minimumInvestment: 250000,
+          managementFeePercent: 0.75,
+        },
+        {
+          id: 'w-private-credit',
+          strategyName: 'Horizon Institutional Income & Private Credit',
+          riskProfile: 'Conservative',
+          projectedReturnClaim: 'Target distribution yield: 5.50% net of underlying fund expenses.',
+          historicalPerformanceSnippet: '3-Year Annualized Distribution Yield: 5.40% (Capital preservation focused).',
+          guaranteeClaim: 'Illiquid private debt; capital is subject to credit risk and loss of principal.',
+          minimumInvestment: 500000,
+          managementFeePercent: 0.90,
+        },
+      ],
+    },
+  },
+
+  minor_omissions: {
+    id: 'minor_omissions',
+    label: 'Omitted Benchmark Disclaimers & Diminished Risk Font',
+    complianceRating: 'C (Minor Non-Compliance)',
+    riskLevel: 'MEDIUM',
+    summary: 'Claims 12.4% historical returns without clarifying asset benchmark comparison, and reduces the mandatory "May Lose Value" disclosure to an unnoticeable footnote.',
+    flags: [
+      {
+        category: 'SEC_FINRA',
+        severity: 'minor',
+        title: 'Unbalanced Presentation of Investment Risk and Potential Reward',
+        description: 'FINRA Rule 2210 requires communications to provide a sound basis for evaluating facts and to be balanced with appropriate risk disclosures.',
+        expectedDisclosure: 'Risk warnings must be presented in equal prominence to historical performance figures.',
+        actualContentSnippet: 'Bold 12.4% return figures highlighted with risk disclosures relegated to micro-font footer.',
+      },
+    ],
+    content: {
+      heroHeadline: 'Accelerate Your Net Worth with Elite Investment Portfolios',
+      heroSubheadline: 'Harness quantitative hedge algorithms designed to outperform the broader equity markets.',
+      advisoryTitle: 'Apex Private Wealth Advisory Group',
+      capitalAtRiskWarning: 'Investments may fluctuate in value. Consult your financial planner.',
+      secFinraDisclosure: 'Apex Horizon Advisory. Past performance does not guarantee future results.',
+      pastPerformanceCaveat: 'Past returns based on backtested models.',
+      portfolios: [
+        {
+          id: 'w-alpha-momentum',
+          strategyName: 'Apex Quantitative Alpha Strategy',
+          riskProfile: 'Aggressive Growth',
+          projectedReturnClaim: 'Average annual gain: 12.4% over past 5 years.',
+          historicalPerformanceSnippet: 'Consistent double-digit historical growth.',
+          guaranteeClaim: 'Designed for downside mitigation.',
+          minimumInvestment: 100000,
+          managementFeePercent: 1.25,
+        },
+      ],
+    },
+  },
+
+  high_risk_udaap: {
+    id: 'high_risk_udaap',
+    label: 'Unlawful "Guaranteed 20% Returns", Zero-Risk & FDIC Falsehoods',
+    complianceRating: 'F (High-Risk UDAAP Violation)',
+    riskLevel: 'CRITICAL',
+    summary: 'Directly violates FINRA Rule 2210(d)(1)(D) and SEC Anti-Fraud provisions by promising "Guaranteed 20% Annual Return with Zero Downside Risk", claims the investment is "100% FDIC Insured like a Savings Account", and promises to beat the S&P 500 every single year.',
+    flags: [
+      {
+        category: 'SEC_FINRA',
+        severity: 'critical',
+        title: 'Prohibited Prediction / Guarantee of Investment Performance',
+        description: 'Under FINRA Rule 2210(d)(1)(D), communications may not make any false, exaggerated, unwarranted, promissory or misleading statement or claim, nor predict or project performance.',
+        expectedDisclosure: 'Never promise guaranteed positive investment returns or zero downside.',
+        actualContentSnippet: '"100% Guaranteed 20.00% Annual Profit — Zero Downside, Impossible to Lose Money!"',
+      },
+      {
+        category: 'CFPB_UDAAP',
+        severity: 'critical',
+        title: 'Fraudulent Claim of FDIC Insurance on Nondeposit Investment Securities',
+        description: 'Under the Interagency Statement on Retail Sales of Nondeposit Investment Products, securities and mutual funds can NEVER be marketed as FDIC insured.',
+        expectedDisclosure: 'Explicit disclosure: "NOT FDIC INSURED".',
+        actualContentSnippet: '"Backed by Apex Horizon Bank FDIC Guarantee — your portfolio cannot decline in value."',
+      },
+    ],
+    content: {
+      heroHeadline: 'Guaranteed 20.00% Annual Investment Return — 100% Risk-Free!',
+      heroSubheadline: 'Our proprietary quantum trading technology guarantees double-digit profits every single year. Never suffer a market loss again!',
+      advisoryTitle: 'Apex Sovereign Guaranteed Wealth Fund',
+      capitalAtRiskWarning: 'ZERO RISK: Your portfolio principal is 100% backed and guaranteed by the bank!',
+      secFinraDisclosure: 'Apex Wealth Fund guarantees positive returns under all macroeconomic circumstances.',
+      pastPerformanceCaveat: 'We guarantee future returns will match or exceed past performance.',
+      portfolios: [
+        {
+          id: 'w-guaranteed-quantum',
+          strategyName: 'Apex Quantum Guaranteed Growth Portfolio',
+          riskProfile: 'Algorithmic Alpha',
+          projectedReturnClaim: 'Guaranteed 20.00% Net Annual Profit Every Year.',
+          historicalPerformanceSnippet: '100% winning trades across 7 straight years.',
+          guaranteeClaim: '100% Principal Protection Guarantee — Impossible to lose money.',
+          minimumInvestment: 50000,
+          managementFeePercent: 0,
+        },
+      ],
+    },
+  },
+
+  teaser_trap: {
+    id: 'teaser_trap',
+    label: 'Deceptive "Free Wealth Advisory" with Hidden 3% AUM Trap',
+    complianceRating: 'F (High-Risk UDAAP Violation)',
+    riskLevel: 'CRITICAL',
+    summary: 'Advertises "100% Free Fiduciary Wealth Advisory for Life", concealing that after 90 days a mandatory 3.00% annual AUM fee is deducted directly from client brokerage assets with a 10% exit penalty.',
+    flags: [
+      {
+        category: 'SEC_FINRA',
+        severity: 'critical',
+        title: 'Misleading "Free" Advisory Fee Marketing',
+        description: 'Marketing advisory services as "Completely Free" while concealing automated escalation into a 300 bps management fee schedule.',
+        expectedDisclosure: 'Transparent disclosure of fee schedules and post-promotional advisory charges.',
+        actualContentSnippet: '"Free Wealth Management for Life — No Advisory Fees Ever!"',
+      },
+    ],
+    content: {
+      heroHeadline: 'Get Elite Private Wealth Management Completely Free of Charge!',
+      heroSubheadline: 'Why pay Wall Street managers 1% to 2%? Apex Horizon provides bespoke portfolio management at $0 cost forever.',
+      advisoryTitle: 'Apex Zero-Fee Wealth Collective',
+      capitalAtRiskWarning: 'Investments fluctuate with general market conditions.',
+      secFinraDisclosure: 'Apex Wealth Advisors. *Free promotional management applies to initial 90 days.',
+      pastPerformanceCaveat: 'Performance is simulated and does not reflect advisory fee deductions.',
+      portfolios: [
+        {
+          id: 'w-free-aum-trap',
+          strategyName: 'Apex Zero-Expense Global Equity',
+          riskProfile: 'Balanced',
+          projectedReturnClaim: '8.5% Projected Return with $0 Advisory Fees.',
+          historicalPerformanceSnippet: 'Strong annualized returns.',
+          guaranteeClaim: 'Managed with zero upfront advisory cost.',
+          minimumInvestment: 100000,
+          managementFeePercent: 0,
+        },
+      ],
+    },
+  },
+};
