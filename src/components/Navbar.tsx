@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Landmark, TrendingUp, ChevronRight, Lock } from 'lucide-react';
+import { Landmark, TrendingUp, ChevronRight } from 'lucide-react';
 
 interface NavbarProps {
   rates?: Array<{ label: string; rate: string; sub: string }>;
