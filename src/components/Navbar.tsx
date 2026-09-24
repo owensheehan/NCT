@@ -17,7 +17,6 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
     { label: 'Wealth Advisory', path: '/wealth' },
     { label: 'Commercial Lending', path: '/business-loans' },
     { label: 'Legal Disclosures', path: '/disclosures' },
-    { label: '⚡ Test Generator', path: '/test-generator' },
   ];
 
   const defaultRates = [
@@ -89,12 +88,11 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
           </ul>
 
           <div className="nav-actions">
-            <Link to="/test-generator" className="nav-btn-secondary" title="View Automated Compliance Test Matrix">
-              <Lock size={13} className="inline mr-1 text-slate-400" />
-              <span>Test Matrix</span>
+            <Link to="/mortgages" className="nav-btn-secondary" title="Compare Residential Mortgage Rates">
+              <span>Compare Rates</span>
             </Link>
-            <Link to="/test-generator" className="nav-btn-primary" title="Synthetic Compliance Simulation Only">
-              <span>Simulation Portal</span>
+            <Link to="/test-generator" className="nav-btn-primary" title="Launch Automated Compliance AI Test Matrix & Advert Generator">
+              <span>⚡ Test Generator</span>
               <ChevronRight size={14} className="inline ml-1" />
             </Link>
           </div>
