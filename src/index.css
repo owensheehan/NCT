@@ -3002,7 +3002,8 @@ button, input, select {
   margin-bottom: 28px;
 }
 
-.sheet-campaign-tag {
+.sheet-campaign-tag,
+.sheet-eyebrow-tag {
   display: inline-block;
   font-size: 0.75rem;
   font-weight: 800;
@@ -3013,30 +3014,30 @@ button, input, select {
 }
 
 .sheet-headline {
-  font-size: 1.85rem;
+  font-size: 2.1rem;
   font-weight: 900;
   color: #0f172a;
-  line-height: 1.2;
+  line-height: 1.18;
   margin: 0 0 10px;
 }
 
 .sheet-subheadline {
   font-size: 0.95rem;
   color: #475569;
-  max-width: 650px;
+  max-width: 700px;
   margin: 0 auto;
-  line-height: 1.5;
+  line-height: 1.55;
 }
 
 /* Featured Offer Rate Card */
 .sheet-rate-card {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: #ffffff;
-  border-radius: 10px;
-  padding: 24px;
+  border-radius: 12px;
+  padding: 26px 24px;
   text-align: center;
   margin-bottom: 30px;
-  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.2);
 }
 
 .rate-card-caption {
@@ -3048,7 +3049,7 @@ button, input, select {
 }
 
 .rate-card-value {
-  font-size: 2.75rem;
+  font-size: 2.9rem;
   font-weight: 900;
   font-family: monospace;
   color: #34d399;
@@ -3061,9 +3062,54 @@ button, input, select {
   color: #cbd5e1;
 }
 
+.rate-card-secondary {
+  font-size: 0.8125rem;
+  color: #93c5fd;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
 .apr-omitted {
   color: #fb7185;
   font-weight: 700;
+}
+
+/* Complete Product Tiers Table (Summarizing Webpage) */
+.sheet-table-section {
+  margin-bottom: 30px;
+}
+
+.sheet-table-responsive {
+  overflow-x: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.sheet-tiers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: left;
+}
+
+.sheet-tiers-table th {
+  background: #f1f5f9;
+  color: #0f172a;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-bottom: 2px solid #cbd5e1;
+  white-space: nowrap;
+}
+
+.sheet-tiers-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  vertical-align: middle;
+}
+
+.sheet-tiers-table tr:last-child td {
+  border-bottom: none;
 }
 
 /* Content Grid: Benefits & QR */
@@ -3072,7 +3118,7 @@ button, input, select {
   grid-template-columns: 1.4fr 1fr;
   gap: 28px;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 @media (max-width: 680px) {
@@ -3120,7 +3166,7 @@ button, input, select {
   background: #f8fafc;
   border: 2px dashed #94a3b8;
   border-radius: 10px;
-  padding: 16px;
+  padding: 18px 16px;
   text-align: center;
 }
 
@@ -3133,14 +3179,21 @@ button, input, select {
 }
 
 .advert-qr-image {
-  width: 150px;
-  height: 150px;
+  width: 155px;
+  height: 155px;
   display: block;
   margin: 0 auto 8px;
   border-radius: 6px;
   background: #ffffff;
   padding: 4px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.qr-cta-instructions {
+  font-size: 0.6875rem;
+  color: #475569;
+  line-height: 1.35;
+  margin: 0 0 6px;
 }
 
 .qr-url-display {
@@ -3169,70 +3222,137 @@ button, input, select {
   background: #1e293b;
 }
 
-/* Discrepancy Panels */
+/* Representative Example Box */
+.sheet-representative-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 26px;
+}
+
+.rep-heading {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+}
+
+.rep-body {
+  font-size: 0.72rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Discrepancy Panels & Inspector Guide */
+.inspector-panel-container {
+  width: 100%;
+  max-width: 820px;
+  margin-top: 24px;
+}
+
+.ctrl-btn-inspector {
+  background: #334155;
+  color: #f8fafc;
+  border: 1px solid var(--border-medium);
+}
+
+.ctrl-btn-inspector:hover {
+  background: #475569;
+}
+
 .discrepancy-audit-panel {
   background: #fff1f2;
   border: 1px solid #fecdd3;
-  border-radius: 8px;
-  padding: 18px 20px;
-  margin-bottom: 26px;
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.08);
 }
 
 .discrepancy-panel-header {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .discrepancy-panel-title {
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: #9f1239;
+  margin: 0 0 4px;
 }
 
 .discrepancy-panel-lead {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: #881337;
-  margin: 0 0 10px;
+  margin: 0;
   line-height: 1.45;
 }
 
-.discrepancy-items-list {
-  margin: 0;
-  padding-left: 18px;
-  font-size: 0.75rem;
-  color: #9f1239;
+.discrepancy-table-wrapper {
+  overflow-x: auto;
+  margin-top: 14px;
+  border: 1px solid #fda4af;
+  border-radius: 6px;
 }
 
-.discrepancy-item {
-  margin-bottom: 6px;
+.discrepancy-audit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  background: #ffffff;
+}
+
+.discrepancy-audit-table th {
+  background: #ffe4e6;
+  color: #881337;
+  font-weight: 800;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #fecdd3;
+  white-space: nowrap;
+}
+
+.discrepancy-audit-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ffe4e6;
+  vertical-align: top;
   line-height: 1.4;
+}
+
+.discrepancy-audit-table tr:last-child td {
+  border-bottom: none;
 }
 
 .aligned-audit-panel {
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
-  border-radius: 8px;
-  padding: 16px 20px;
-  margin-bottom: 26px;
+  border-radius: 10px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
 }
 
 .aligned-panel-header {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 6px;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .aligned-panel-title {
-  font-size: 0.8125rem;
+  font-size: 0.9rem;
   font-weight: 800;
   color: #15803d;
+  margin: 0 0 4px;
 }
 
 .aligned-panel-lead {
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: #166534;
   margin: 0;
   line-height: 1.45;
@@ -3272,7 +3392,7 @@ button, input, select {
   body {
     background: #ffffff !important;
   }
-  .navbar, .compliance-audit-bar, .advert-controls-bar, .compliance-guidance-section, .footer-wrapper, .qr-save-subbtn {
+  .navbar, .compliance-audit-bar, .advert-controls-bar, .compliance-guidance-section, .footer-wrapper, .qr-save-subbtn, .inspector-panel-container {
     display: none !important;
   }
   .advert-stage-section {
@@ -3287,6 +3407,7 @@ button, input, select {
     max-width: 100% !important;
   }
 }
+
 
 
 

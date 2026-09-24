@@ -28,23 +28,49 @@ export interface TestSuiteExport {
   tests: TestCaseWithQr[];
 }
 
+export interface ProductTierAdvert {
+  name: string;
+  rate: string;
+  apr: string | null;
+  termOrLimit: string;
+  monthlyPaymentOrFee: string;
+  keyFeature: string;
+}
+
+export interface GroundTruthDiscrepancy {
+  category: string;
+  advertClaim: string;
+  landingPageTruth: string;
+  regulatoryStandard: string;
+}
+
 export interface AdvertDocumentData {
   testId: string;
   testName: string;
   vertical: string;
   campaignTitle: string;
+  eyebrowTag: string;
   headline: string;
   subheadline: string;
+  featuredBadge: string;
   featuredOffer: string;
   advertisedRate: string;
   advertisedApr: string | null;
+  secondaryMetric: string;
   landingPageUrl: string;
   qrDataUrl: string;
   expectedOutcome: 'PASS' | 'FAIL';
   alignmentStatus: 'ALIGNED_WITH_LANDING_PAGE' | 'CONFLICTING_RATES_OR_TERMS' | 'DECEPTIVE_ADVERT_CLAIMS';
   discrepancies: string[];
+  groundTruthDiscrepancies: GroundTruthDiscrepancy[];
   bulletPoints: string[];
+  productTiers: ProductTierAdvert[];
+  representativeExample: string;
+  qrCalloutText: string;
   legalFinePrint: string;
   advertToken: string;
   publishedDate: string;
+  nmlsId: string;
+  equalHousingLender: boolean;
+  memberFdic: boolean;
 }

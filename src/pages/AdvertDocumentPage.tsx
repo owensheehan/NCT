@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import type { AdvertDocumentData, TestCaseDefinition } from '../types/testSuite.ts';
+import type { AdvertDocumentData, TestCaseDefinition, ProductTierAdvert, GroundTruthDiscrepancy } from '../types/testSuite.ts';
 import { STANDARD_TEST_CASES } from '../utils/testSuiteGenerator.ts';
 import {
   generateAdvertDocument,
@@ -17,10 +17,14 @@ import {
   ArrowRight,
   ShieldCheck,
   AlertTriangle,
-  FileText,
   QrCode,
   Sparkles,
   Download,
+  Info,
+  CheckCircle2,
+  XCircle,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
@@ -36,7 +40,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
     return STANDARD_TEST_CASES[0];
   }, [testId]);
 
-  // Compute base URL for QR codes and links
+  // Base URL calculation
   const baseUrl = useMemo((): string => {
     if (window.location.hostname.includes('github.io')) {
       return 'https://owensheehan.github.io/NCT/';
@@ -47,6 +51,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
   const [advertDoc, setAdvertDoc] = useState<AdvertDocumentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const [showInspectorNotes, setShowInspectorNotes] = useState<boolean>(true);
 
   // Generate advert document data
   const loadAdvert = useCallback((): void => {
@@ -67,7 +72,9 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
   };
 
   // Navigation between tests
-  const currentIndex = STANDARD_TEST_CASES.findIndex((tc: TestCaseDefinition): boolean => tc.id === activeTestCase.id);
+  const currentIndex = STANDARD_TEST_CASES.findIndex(
+    (tc: TestCaseDefinition): boolean => tc.id === activeTestCase.id
+  );
   const prevTestCase = currentIndex > 0 ? STANDARD_TEST_CASES[currentIndex - 1] : null;
   const nextTestCase =
     currentIndex < STANDARD_TEST_CASES.length - 1 ? STANDARD_TEST_CASES[currentIndex + 1] : null;
@@ -91,7 +98,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
       <Navbar />
 
       <main className="main-content">
-        {/* Navigation & Controls Bar */}
+        {/* Navigation & Controls Utility Bar */}
         <section className="advert-controls-bar">
           <div className="advert-controls-container">
             <div className="controls-top-row">
@@ -159,7 +166,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                   Vertical: <strong>{activeTestCase.vertical}</strong>
                 </span>
                 <span className="meta-text text-slate-400">
-                  Framework: <strong>{activeTestCase.regulatoryFramework}</strong>
+                  Rule: <strong>{activeTestCase.regulatoryFramework}</strong>
                 </span>
               </div>
 
@@ -174,6 +181,16 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                   <span>Re-roll Random Copy</span>
                 </button>
 
+                <button
+                  type="button"
+                  className="ctrl-btn ctrl-btn-inspector"
+                  onClick={(): void => setShowInspectorNotes(!showInspectorNotes)}
+                  title="Toggle compliance inspector comparison guide"
+                >
+                  {showInspectorNotes ? <EyeOff size={14} /> : <Eye size={14} />}
+                  <span>{showInspectorNotes ? 'Hide Audit Notes' : 'Show Audit Notes'}</span>
+                </button>
+
                 {advertDoc && (
                   <>
                     <button
@@ -183,7 +200,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                       title="Open printable Letter/A4 format or save as PDF"
                     >
                       <Printer size={14} />
-                      <span>Print / PDF Document</span>
+                      <span>Print Complete Advert</span>
                     </button>
 
                     <a
@@ -194,7 +211,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                       title="Open destination test landing page in new tab"
                     >
                       <ExternalLink size={14} />
-                      <span>Launch Landing Page</span>
+                      <span>Launch Linked Page</span>
                     </a>
                   </>
                 )}
@@ -203,19 +220,19 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
           </div>
         </section>
 
-        {/* Advert Document Sheet Area */}
+        {/* Advert Presentation Stage */}
         <section className="advert-stage-section">
           <div className="advert-stage-container">
             {loading || !advertDoc ? (
               <div className="loading-box">
                 <Sparkles size={28} className="text-cyan-400 animate-spin" />
-                <p>Generating standalone marketing advert document & QR code...</p>
+                <p>Generating complete marketing advertisement & scannable QR code...</p>
               </div>
             ) : (
               <div className="advert-presentation-wrapper">
-                {/* Physical-style marketing flyer document */}
+                {/* COMPLETE BANK MARKETING ADVERTISEMENT DOCUMENT */}
                 <article className="advert-document-sheet" id="advert-sheet">
-                  {/* Bank Header */}
+                  {/* Bank Header Lockup */}
                   <header className="sheet-header">
                     <div className="brand-lockup">
                       <div className="sheet-bank-name">APEX HORIZON BANK & TRUST</div>
@@ -224,47 +241,35 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                       </div>
                     </div>
                     <div className="sheet-header-meta">
+                      <div className="sheet-token-text">DOCUMENT ID: {advertDoc.advertToken}</div>
+                      <div className="sheet-token-text">PUBLISHED: {advertDoc.publishedDate}</div>
                       <div className="sheet-badge-row">
                         <span
                           className={`sheet-status-tag ${
                             advertDoc.expectedOutcome === 'PASS' ? 'tag-pass' : 'tag-fail'
                           }`}
                         >
-                          TEST SPECIFICATION: {advertDoc.expectedOutcome}
+                          TEST BENCHMARK: [{advertDoc.expectedOutcome}]
                         </span>
                       </div>
-                      <div className="sheet-token-text">DOC REF: {advertDoc.advertToken}</div>
-                      <div className="sheet-token-text">PUB DATE: {advertDoc.publishedDate}</div>
                     </div>
                   </header>
 
-                  {/* Test Context Callout */}
-                  <div className={`sheet-audit-callout ${advertDoc.expectedOutcome === 'FAIL' ? 'callout-fail' : ''}`}>
-                    <div className="callout-title">
-                      <FileText size={15} className="inline mr-1" />
-                      <strong>MARKETING ADVERT DOCUMENT TEST CASE:</strong> {advertDoc.testId} — {advertDoc.testName}
-                    </div>
-                    <div className="callout-desc">
-                      Simulated physical/digital advertisement for AI compliance inspection. The QR code links to the
-                      live target landing page for cross-document consistency auditing.
-                    </div>
-                  </div>
-
-                  {/* Main Promotional Headline */}
-                  <div className="sheet-hero">
-                    <div className="sheet-campaign-tag">{advertDoc.campaignTitle}</div>
+                  {/* Main Promotional Hero Section */}
+                  <section className="sheet-hero">
+                    <div className="sheet-eyebrow-tag">{advertDoc.eyebrowTag}</div>
                     <h1 className="sheet-headline">{advertDoc.headline}</h1>
                     <p className="sheet-subheadline">{advertDoc.subheadline}</p>
-                  </div>
+                  </section>
 
-                  {/* Featured Offer Rate Card */}
-                  <div className="sheet-rate-card">
-                    <div className="rate-card-caption">FEATURED PROMOTIONAL RATE</div>
+                  {/* Featured Offer Banner Card */}
+                  <section className="sheet-rate-card">
+                    <div className="rate-card-caption">FEATURED PROMOTIONAL OFFER</div>
                     <div className="rate-card-value">{advertDoc.advertisedRate}</div>
                     <div className="rate-card-apr">
                       {advertDoc.advertisedApr ? (
                         <span>
-                          Official APR: <strong>{advertDoc.advertisedApr}</strong>
+                          Official APR Disclosure: <strong>{advertDoc.advertisedApr}</strong>
                         </span>
                       ) : (
                         <span className="apr-omitted">
@@ -272,13 +277,57 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                         </span>
                       )}
                     </div>
-                  </div>
+                    {advertDoc.secondaryMetric && (
+                      <div className="rate-card-secondary">{advertDoc.secondaryMetric}</div>
+                    )}
+                  </section>
 
-                  {/* Grid: Value Propositions & Scannable QR Code */}
-                  <div className="sheet-content-grid">
-                    {/* Benefits List */}
+                  {/* Product Options & Representative Terms Table (Summarizing Webpage) */}
+                  {advertDoc.productTiers.length > 0 && (
+                    <section className="sheet-table-section">
+                      <h3 className="section-heading">Featured Program Options & Rate Schedule:</h3>
+                      <div className="sheet-table-responsive">
+                        <table className="sheet-tiers-table">
+                          <thead>
+                            <tr>
+                              <th>Program Name</th>
+                              <th>Rate Claim</th>
+                              <th>Disclosed APR</th>
+                              <th>Term / Limits</th>
+                              <th>Repayment / Fee</th>
+                              <th>Highlights</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {advertDoc.productTiers.map((tier: ProductTierAdvert, idx: number): React.ReactNode => (
+                              <tr key={idx}>
+                                <td>
+                                  <strong>{tier.name}</strong>
+                                </td>
+                                <td className="font-mono text-emerald-700">{tier.rate}</td>
+                                <td>
+                                  {tier.apr ? (
+                                    <span className="font-mono text-slate-800">{tier.apr}</span>
+                                  ) : (
+                                    <span className="text-rose-600 font-bold">Omitted</span>
+                                  )}
+                                </td>
+                                <td>{tier.termOrLimit}</td>
+                                <td>{tier.monthlyPaymentOrFee}</td>
+                                <td className="text-slate-500 text-xs">{tier.keyFeature}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Two-Column Middle Section: Key Highlights & Embedded QR CTA */}
+                  <section className="sheet-content-grid">
+                    {/* Left: Program Advantages */}
                     <div className="sheet-benefits-col">
-                      <h3 className="section-heading">Promotional Details & Highlights:</h3>
+                      <h3 className="section-heading">Key Program Advantages & Borrower Privileges:</h3>
                       <ul className="benefits-checklist">
                         {advertDoc.bulletPoints.map((bullet: string, idx: number): React.ReactNode => (
                           <li key={idx} className="benefit-item">
@@ -289,15 +338,19 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                       </ul>
                     </div>
 
-                    {/* QR Code Action Box */}
+                    {/* Right: Scannable QR Code Response Mechanism */}
                     <div className="sheet-qr-col">
                       <div className="advert-qr-box">
-                        <div className="qr-badge">SCAN TO VERIFY OR APPLY</div>
+                        <div className="qr-badge">SCAN TO APPLY OR VIEW LIVE RATES</div>
                         <img
                           src={advertDoc.qrDataUrl}
                           alt={`QR Code to ${advertDoc.landingPageUrl}`}
                           className="advert-qr-image"
                         />
+                        <p className="qr-cta-instructions">
+                          Point your smartphone camera at the QR code to verify your rate, view complete statutory
+                          disclosures, and complete your application online.
+                        </p>
                         <div className="qr-url-display">{advertDoc.landingPageUrl}</div>
                         <button
                           type="button"
@@ -310,82 +363,124 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </section>
 
-                  {/* Ground Truth Discrepancies Panel */}
-                  {advertDoc.discrepancies.length > 0 ? (
-                    <div className="discrepancy-audit-panel">
-                      <div className="discrepancy-panel-header">
-                        <AlertTriangle size={16} className="text-rose-600" />
-                        <span className="discrepancy-panel-title">
-                          Expected AI Cross-Inspection Discrepancies (Advert vs Landing Page):
-                        </span>
-                      </div>
-                      <p className="discrepancy-panel-lead">
-                        In this failing test scenario, this marketing document intentionally strays from the landing
-                        page. Nucomply AI should identify the following inconsistencies upon following the QR code:
-                      </p>
-                      <ul className="discrepancy-items-list">
-                        {advertDoc.discrepancies.map((d: string, idx: number): React.ReactNode => (
-                          <li key={idx} className="discrepancy-item">
-                            <strong>Violation #{idx + 1}:</strong> {d}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : (
-                    <div className="aligned-audit-panel">
-                      <div className="aligned-panel-header">
-                        <ShieldCheck size={16} className="text-emerald-600" />
-                        <span className="aligned-panel-title">
-                          Full Compliance Alignment (Pass Scenario):
-                        </span>
-                      </div>
-                      <p className="aligned-panel-lead">
-                        All rates, loan terms, trigger items, and statutory disclosures in this advertisement
-                        correspond precisely to the destination landing page. No deceptive marketing or bait-and-switch
-                        tactics are present.
-                      </p>
-                    </div>
-                  )}
+                  {/* Representative Calculation Example Box */}
+                  <section className="sheet-representative-box">
+                    <h4 className="rep-heading">
+                      <Info size={14} className="inline mr-1 text-slate-600" />
+                      Representative Financing Terms & Repayment Basis:
+                    </h4>
+                    <p className="rep-body">{advertDoc.representativeExample}</p>
+                  </section>
 
-                  {/* Legal Fine Print */}
+                  {/* Statutory Fine Print Footer */}
                   <footer className="sheet-footer">
-                    <div className="fine-print-title">STATUTORY LEGAL DISCLOSURES & TERMS:</div>
+                    <div className="fine-print-title">STATUTORY DISCLOSURES & REGULATORY NOTICES:</div>
                     <p className="fine-print-body">{advertDoc.legalFinePrint}</p>
                     <div className="sheet-footer-bottom">
-                      <span>Apex Horizon Bancorp N.A. • Equal Opportunity Credit Provider</span>
-                      <span>Document ID: {advertDoc.advertToken} • Verified Test Artifact</span>
+                      <span>
+                        Apex Horizon Bancorp N.A. • NMLS Unique Identifier #{advertDoc.nmlsId} •{' '}
+                        {advertDoc.memberFdic ? 'Member FDIC' : 'Non-Deposit Investment'}
+                        {advertDoc.equalHousingLender && ' • Equal Housing Lender'}
+                      </span>
+                      <span>Verified Test Document • Ref: {advertDoc.advertToken}</span>
                     </div>
                   </footer>
                 </article>
+
+                {/* Ground Truth Cross-Check Discrepancy Panel (For Compliance Auditors & AI Benchmarks) */}
+                {showInspectorNotes && (
+                  <div className="inspector-panel-container">
+                    {advertDoc.groundTruthDiscrepancies.length > 0 ? (
+                      <div className="discrepancy-audit-panel">
+                        <div className="discrepancy-panel-header">
+                          <AlertTriangle size={18} className="text-rose-600" />
+                          <div>
+                            <h4 className="discrepancy-panel-title">
+                              Compliance AI Benchmark: Ground-Truth Discrepancies (Advert vs Landing Page)
+                            </h4>
+                            <p className="discrepancy-panel-lead">
+                              In this failing test scenario, the marketing advert deliberately strays from the destination
+                              landing page. Nucomply AI must detect these contradictions upon scanning the QR code:
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="discrepancy-table-wrapper">
+                          <table className="discrepancy-audit-table">
+                            <thead>
+                              <tr>
+                                <th>Violation Category</th>
+                                <th>Marketing Advert Claim</th>
+                                <th>Landing Page Reality</th>
+                                <th>Statutory Mandate</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {advertDoc.groundTruthDiscrepancies.map(
+                                (item: GroundTruthDiscrepancy, idx: number): React.ReactNode => (
+                                  <tr key={idx}>
+                                    <td>
+                                      <strong className="text-rose-700 flex items-center gap-1">
+                                        <XCircle size={13} />
+                                        {item.category}
+                                      </strong>
+                                    </td>
+                                    <td className="text-rose-900 bg-rose-50/50">{item.advertClaim}</td>
+                                    <td className="text-slate-800 bg-slate-50">{item.landingPageTruth}</td>
+                                    <td className="font-mono text-xs text-slate-600">{item.regulatoryStandard}</td>
+                                  </tr>
+                                )
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="aligned-audit-panel">
+                        <div className="aligned-panel-header">
+                          <CheckCircle2 size={18} className="text-emerald-600" />
+                          <div>
+                            <h4 className="aligned-panel-title">
+                              Compliance AI Benchmark: Complete Disclosure Alignment (Pass Scenario)
+                            </h4>
+                            <p className="aligned-panel-lead">
+                              This advertisement fully and accurately summarizes the destination landing page. All APRs,
+                              repayment schedules, trigger terms, and statutory disclaimers are in 100% agreement.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
         </section>
 
-        {/* Guidance Section */}
+        {/* Technical Guidance Section */}
         <section className="compliance-guidance-section">
           <div className="guidance-container">
             <div className="guidance-box">
               <div className="guidance-header">
                 <QrCode size={20} className="text-cyan-400" />
-                <h3>How Nucomply AI Tests Marketing Adverts with QR Codes:</h3>
+                <h3>How to Test Marketing Adverts with the Nucomply Platform:</h3>
               </div>
               <ul className="guidance-list">
                 <li>
-                  <strong>Cross-Document Multimodal Testing:</strong> The compliance engine ingests the marketing advert
-                  (PDF, flyer, or image), scans the embedded QR code to resolve the destination URL, and fetches the
-                  live digital landing page.
+                  <strong>Multimodal Cross-Inspection:</strong> Ingest the complete marketing advert via OCR or vision model,
+                  extract advertised claims (rates, APRs, fees, guarantees), resolve the destination page via the embedded QR code,
+                  and verify that all terms are consistent.
                 </li>
                 <li>
-                  <strong>Bait-and-Switch Detection:</strong> The AI compares promotional promises in the advert (e.g.,
-                  teaser rates, zero closing costs, unconditional approval) against the fine print and statutory disclosures
-                  found on the destination webpage.
+                  <strong>Bait-and-Switch Detection:</strong> In failing test cases, verify whether the AI flags contradictions
+                  between promotional print promises and the live digital contract.
                 </li>
                 <li>
-                  <strong>Dynamic Randomization:</strong> Use the <strong>"Re-roll Random Copy"</strong> button above to
-                  generate alternative copy variants and rates, allowing stress-testing of AI tolerance and fuzzy matching.
+                  <strong>Randomization Testing:</strong> Click <strong>"Re-roll Random Copy"</strong> in the top toolbar to generate
+                  new randomized claim values and rates to test your compliance model’s robustness against variable text.
                 </li>
               </ul>
             </div>
