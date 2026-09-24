@@ -21,12 +21,15 @@ export interface PageDynamicVariant<T> {
   content: T;
 }
 
+export type DesiredOutcome = 'pass' | 'fail' | 'random';
+
 export interface VisitSession {
   visitId: string;
   timestamp: string;
   visitorSeed: number;
   activeVariantId: ComplianceVariantId;
   isLocked: boolean;
+  outcomeMode: DesiredOutcome;
 }
 
 export interface VisitLogEntry {
@@ -37,6 +40,7 @@ export interface VisitLogEntry {
   riskLevel: 'LOW' | 'MEDIUM' | 'CRITICAL';
   userAgent: string;
   expectedFlagCount: number;
+  outcomeMode: DesiredOutcome;
 }
 
 /* Mortgage product types */

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { ComplianceFlag, ComplianceVariantId, VisitSession, VisitLogEntry } from '../types/compliance.ts';
 import {
   switchVariant,
+  switchOutcomeMode,
   randomizeVisit,
   recordVisit,
   getVisitAuditLog,
@@ -22,6 +23,7 @@ import {
   Download,
   Trash2,
   ExternalLink,
+  SlidersHorizontal,
 } from 'lucide-react';
 
 interface ComplianceAuditBarProps {
@@ -39,24 +41,33 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
   riskLevel,
   variantSummary,
 }): React.ReactNode => {
-  const [copied, setCopied] = useState<boolean>(false);
+  const [copiedType, setCopiedType] = useState<string | null>(null);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'ground_truth' | 'audit_log'>('ground_truth');
   const [auditLogs, setAuditLogs] = useState<VisitLogEntry[]>([]);
   const [webhookInput, setWebhookInput] = useState<string>(() => localStorage.getItem('nucomply_webhook_url') || '');
   const [webhookSaved, setWebhookSaved] = useState<boolean>(false);
 
-  // Automatically record this visit upon mounting
   useEffect((): void => {
     recordVisit(session, riskLevel, flags.length);
     setAuditLogs(getVisitAuditLog());
   }, [session, riskLevel, flags.length]);
 
-  const handleCopyUrl = (): void => {
-    const currentUrl = window.location.href;
-    navigator.clipboard.writeText(currentUrl).then((): void => {
-      setCopied(true);
-      setTimeout((): void => setCopied(false), 2200);
+  const handleCopyUrl = (type: 'current' | 'pass' | 'fail'): void => {
+    const hash = window.location.hash || '#/';
+    const baseHash = hash.split('?')[0];
+    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+
+    let targetUrl = window.location.href;
+    if (type === 'pass') {
+      targetUrl = `${baseUrl}${baseHash}?outcome=pass`;
+    } else if (type === 'fail') {
+      targetUrl = `${baseUrl}${baseHash}?outcome=fail`;
+    }
+
+    navigator.clipboard.writeText(targetUrl).then((): void => {
+      setCopiedType(type);
+      setTimeout((): void => setCopiedType(null), 2200);
     });
   };
 
@@ -111,13 +122,47 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
             <span className="audit-visit-count">Visit #{session.visitorSeed}</span>
           </div>
           {getRiskBadge()}
+
+          {/* Caller Target Mode Indicator */}
+          <div className="audit-mode-chip">
+            <SlidersHorizontal size={12} className="mr-1 inline" />
+            <span>Mode: <strong>{session.outcomeMode.toUpperCase()}</strong></span>
+          </div>
         </div>
 
-        {/* Center: Quick Variant Selector */}
+        {/* Center: Caller Outcome & Scenario Controls */}
         <div className="audit-bar-controls">
-          <label htmlFor="variant-select" className="audit-control-label">
-            Active Scenario:
-          </label>
+          {/* Outcome Filter (Caller Argument Simulator) */}
+          <div className="outcome-pill-group">
+            <button
+              type="button"
+              className={`outcome-pill ${session.outcomeMode === 'random' ? 'outcome-pill-active' : ''}`}
+              onClick={(): void => switchOutcomeMode('random')}
+              title="Default: Randomly pick across all scenarios on each visit"
+            >
+              Default (Random)
+            </button>
+            <button
+              type="button"
+              className={`outcome-pill outcome-pill-pass ${session.outcomeMode === 'pass' ? 'outcome-pill-active' : ''}`}
+              onClick={(): void => switchOutcomeMode('pass')}
+              title="Force Pass: Random clean visits guaranteed to pass compliance"
+            >
+              <Check size={11} className="inline mr-1" />
+              Force Pass (?outcome=pass)
+            </button>
+            <button
+              type="button"
+              className={`outcome-pill outcome-pill-fail ${session.outcomeMode === 'fail' ? 'outcome-pill-active' : ''}`}
+              onClick={(): void => switchOutcomeMode('fail')}
+              title="Force Fail: Random failing visits cycling through violations"
+            >
+              <AlertTriangle size={11} className="inline mr-1" />
+              Force Fail (?outcome=fail)
+            </button>
+          </div>
+
+          {/* Quick Specific Variant Picker */}
           <select
             id="variant-select"
             className="audit-select"
@@ -125,6 +170,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
             onChange={(e: React.ChangeEvent<HTMLSelectElement>): void =>
               switchVariant(e.target.value as ComplianceVariantId, true)
             }
+            title="Lock into a specific regulatory scenario"
           >
             <option value="compliant">Compliant (Grade A)</option>
             <option value="minor_omissions">Minor Omissions (Grade C)</option>
@@ -132,6 +178,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
             <option value="teaser_trap">Teaser Trap (Grade F)</option>
           </select>
 
+          {/* Re-roll visit */}
           <button
             type="button"
             className="audit-btn audit-btn-primary"
@@ -139,18 +186,41 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
             title="Simulate a fresh visit to trigger dynamic content rotation"
           >
             <RotateCw size={13} className="mr-1 inline" />
-            <span>Next Dynamic Visit</span>
+            <span>Next Visit</span>
           </button>
 
-          <button
-            type="button"
-            className="audit-btn audit-btn-secondary"
-            onClick={handleCopyUrl}
-            title="Copy exact URL for AI crawler inspection"
-          >
-            {copied ? <Check size={13} className="text-green-400" /> : <Copy size={13} />}
-            <span>{copied ? 'Copied URL!' : 'Copy URL for AI'}</span>
-          </button>
+          {/* Quick Copy Caller URLs */}
+          <div className="copy-btn-group">
+            <button
+              type="button"
+              className="audit-btn audit-btn-secondary"
+              onClick={(): void => handleCopyUrl('current')}
+              title="Copy current page URL"
+            >
+              {copiedType === 'current' ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+              <span>{copiedType === 'current' ? 'Copied!' : 'Copy URL'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="audit-btn audit-btn-pass-copy"
+              onClick={(): void => handleCopyUrl('pass')}
+              title="Copy URL with ?outcome=pass argument"
+            >
+              {copiedType === 'pass' ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+              <span>{copiedType === 'pass' ? 'Copied Pass URL!' : 'Pass URL'}</span>
+            </button>
+
+            <button
+              type="button"
+              className="audit-btn audit-btn-fail-copy"
+              onClick={(): void => handleCopyUrl('fail')}
+              title="Copy URL with ?outcome=fail argument"
+            >
+              {copiedType === 'fail' ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+              <span>{copiedType === 'fail' ? 'Copied Fail URL!' : 'Fail URL'}</span>
+            </button>
+          </div>
 
           {/* Toggle Ground Truth Drawer */}
           <button
@@ -165,7 +235,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
               }
             }}
           >
-            <span>Expected Violations ({flags.length})</span>
+            <span>Expected Flags ({flags.length})</span>
             {showDrawer && activeDrawerTab === 'ground_truth' ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
 
@@ -185,7 +255,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
             title="View persistent history of all AI and user visits recorded"
           >
             <History size={13} className="mr-1 inline" />
-            <span>Visit Audit Log ({auditLogs.length})</span>
+            <span>Audit Log ({auditLogs.length})</span>
             {showDrawer && activeDrawerTab === 'audit_log' ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
         </div>
@@ -224,10 +294,12 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
                     <h4 className="audit-drawer-title">
                       Ground-Truth Compliance Violations for AI Verification
                     </h4>
-                    <p className="audit-drawer-desc">{variantSummary}</p>
+                    <p className="audit-drawer-desc">
+                      Current Outcome Argument: <strong className="text-cyan-400">{session.outcomeMode.toUpperCase()}</strong> — {variantSummary}
+                    </p>
                   </div>
                   <span className="audit-drawer-status">
-                    Expected AI Flags: {flags.length === 0 ? 'Zero Violations (Clean)' : `${flags.length} Detected`}
+                    Expected AI Flags: {flags.length === 0 ? 'Zero Violations (PASS)' : `${flags.length} Detected (FAIL)`}
                   </span>
                 </div>
 
@@ -235,7 +307,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
                   <div className="audit-clean-box">
                     <ShieldCheck size={20} className="text-emerald-400" />
                     <p>
-                      This page variation is fully compliant. Your compliance AI should flag zero
+                      <strong>PASSING SITE:</strong> This page variation is fully compliant. Your compliance AI should flag zero
                       statutory violations or deceptive practices.
                     </p>
                   </div>
@@ -338,6 +410,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
                           <th>Timestamp (UTC)</th>
                           <th>Visit ID</th>
                           <th>Page Path</th>
+                          <th>Caller Mode</th>
                           <th>Variant</th>
                           <th>Risk Grade</th>
                           <th>Expected Flags</th>
@@ -350,6 +423,11 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
                             <td className="font-mono text-cyan-400 font-bold">{log.visitId}</td>
                             <td className="font-mono text-amber-300">{log.path}</td>
                             <td>
+                              <span className={`font-mono text-xs font-bold ${log.outcomeMode === 'pass' ? 'text-emerald-400' : log.outcomeMode === 'fail' ? 'text-rose-400' : 'text-slate-400'}`}>
+                                {log.outcomeMode?.toUpperCase() || 'RANDOM'}
+                              </span>
+                            </td>
+                            <td>
                               <span className="audit-variant-tag">{log.variantId}</span>
                             </td>
                             <td>
@@ -359,9 +437,9 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
                             </td>
                             <td className="text-center font-bold font-mono">
                               {log.expectedFlagCount === 0 ? (
-                                <span className="text-emerald-400">0 (Clean)</span>
+                                <span className="text-emerald-400">0 (PASS)</span>
                               ) : (
-                                <span className="text-rose-400">{log.expectedFlagCount}</span>
+                                <span className="text-rose-400">{log.expectedFlagCount} (FAIL)</span>
                               )}
                             </td>
                           </tr>

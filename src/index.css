@@ -2185,3 +2185,81 @@ button, input, select {
   font-size: 0.72rem;
   color: #e2e8f0;
 }
+
+.audit-mode-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-medium);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+}
+
+.outcome-pill-group {
+  display: flex;
+  background: #0f182b;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+
+.outcome-pill {
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.outcome-pill:hover {
+  color: #ffffff;
+}
+
+.outcome-pill-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.outcome-pill-pass.outcome-pill-active {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+}
+
+.outcome-pill-fail.outcome-pill-active {
+  background: rgba(244, 63, 94, 0.25);
+  color: #fda4af;
+}
+
+.copy-btn-group {
+  display: flex;
+  gap: 4px;
+}
+
+.audit-btn-pass-copy {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.audit-btn-pass-copy:hover {
+  background: rgba(16, 185, 129, 0.22);
+}
+
+.audit-btn-fail-copy {
+  background: rgba(244, 63, 94, 0.12);
+  color: #fda4af;
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
+.audit-btn-fail-copy:hover {
+  background: rgba(244, 63, 94, 0.22);
+}
+

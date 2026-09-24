@@ -3,13 +3,24 @@ import type {
   VisitSession,
   PageDynamicVariant,
   VisitLogEntry,
+  DesiredOutcome,
 } from '../types/compliance.ts';
 
-const VARIANT_CYCLE: ComplianceVariantId[] = [
+const ALL_VARIANTS: ComplianceVariantId[] = [
   'compliant',
   'minor_omissions',
   'high_risk_udaap',
   'teaser_trap',
+];
+
+const FAIL_VARIANTS: ComplianceVariantId[] = [
+  'minor_omissions',
+  'high_risk_udaap',
+  'teaser_trap',
+];
+
+const PASS_VARIANTS: ComplianceVariantId[] = [
+  'compliant',
 ];
 
 const AUDIT_STORAGE_KEY = 'nucomply_audit_log';
@@ -31,6 +42,23 @@ const extractUrlParam = (paramName: string): string | null => {
   }
 
   return null;
+};
+
+/**
+ * Parses caller outcome preference (?outcome=pass|fail, ?status=pass|fail, ?compliance=pass|fail, ?mode=pass|fail)
+ */
+export const getRequestedOutcome = (): DesiredOutcome => {
+  const rawParam = (
+    extractUrlParam('outcome') ||
+    extractUrlParam('status') ||
+    extractUrlParam('compliance') ||
+    extractUrlParam('result') ||
+    extractUrlParam('mode')
+  )?.toLowerCase().trim();
+
+  if (rawParam === 'pass' || rawParam === 'passing') return 'pass';
+  if (rawParam === 'fail' || rawParam === 'failing') return 'fail';
+  return 'random';
 };
 
 export const getVisitAuditLog = (): VisitLogEntry[] => {
@@ -78,10 +106,10 @@ export const recordVisit = (
     riskLevel,
     userAgent: navigator.userAgent,
     expectedFlagCount,
+    outcomeMode: session.outcomeMode,
   };
 
   const existingLogs = getVisitAuditLog();
-  // Prevent duplicate continuous logging for same session on hot re-renders
   if (existingLogs.length > 0 && existingLogs[0]?.visitId === session.visitId && existingLogs[0]?.path === entry.path) {
     return;
   }
@@ -90,7 +118,7 @@ export const recordVisit = (
   try {
     localStorage.setItem(AUDIT_STORAGE_KEY, JSON.stringify(updatedLogs));
   } catch {
-    // ignore quota errors
+    // ignore
   }
 
   // 1. Expose on window object for automated AI inspection crawlers
@@ -122,8 +150,9 @@ export const recordVisit = (
   setMeta('nucomply-variant', entry.variantId);
   setMeta('nucomply-risk-level', entry.riskLevel);
   setMeta('nucomply-expected-flags', expectedFlagCount.toString());
+  setMeta('nucomply-outcome-mode', entry.outcomeMode);
 
-  // 3. Optional Webhook dispatch if configured via query param or storage
+  // 3. Optional Webhook dispatch
   const webhookUrl = extractUrlParam('webhook') || localStorage.getItem('nucomply_webhook_url');
   if (webhookUrl && webhookUrl.startsWith('http')) {
     try {
@@ -144,16 +173,28 @@ export const recordVisit = (
 export const getVisitSession = (): VisitSession => {
   const paramVariant = extractUrlParam('variant') as ComplianceVariantId | null;
   const isLocked = extractUrlParam('lock') === 'true';
+  const outcomeMode = getRequestedOutcome();
 
   const sessionVisitCount = parseInt(sessionStorage.getItem('nucomply_visit_count') ?? '0', 10) + 1;
   sessionStorage.setItem('nucomply_visit_count', sessionVisitCount.toString());
 
   let activeVariant: ComplianceVariantId;
-  if (paramVariant && VARIANT_CYCLE.includes(paramVariant)) {
+
+  if (paramVariant && ALL_VARIANTS.includes(paramVariant)) {
+    // Explicit variant requested directly in URL
     activeVariant = paramVariant;
+  } else if (outcomeMode === 'pass') {
+    // Caller wants a passing site (clean/compliant, but still dynamic/randomized seed)
+    const passIndex = (sessionVisitCount - 1) % PASS_VARIANTS.length;
+    activeVariant = PASS_VARIANTS[passIndex];
+  } else if (outcomeMode === 'fail') {
+    // Caller wants a failing site (randomly cycles across failing scenarios on each visit)
+    const failIndex = (sessionVisitCount - 1) % FAIL_VARIANTS.length;
+    activeVariant = FAIL_VARIANTS[failIndex];
   } else {
-    const cycleIndex = (sessionVisitCount - 1) % VARIANT_CYCLE.length;
-    activeVariant = VARIANT_CYCLE[cycleIndex];
+    // Default: completely random across all scenarios
+    const cycleIndex = (sessionVisitCount - 1) % ALL_VARIANTS.length;
+    activeVariant = ALL_VARIANTS[cycleIndex];
   }
 
   const visitId = `VISIT-${Date.now().toString(36).toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
@@ -166,7 +207,34 @@ export const getVisitSession = (): VisitSession => {
     visitorSeed: sessionVisitCount,
     activeVariantId: activeVariant,
     isLocked,
+    outcomeMode,
   };
+};
+
+export const switchOutcomeMode = (outcome: DesiredOutcome): void => {
+  const hash = window.location.hash;
+  const hashQuestionIdx = hash.indexOf('?');
+  const baseHash = hashQuestionIdx !== -1 ? hash.substring(0, hashQuestionIdx) : (hash || '#/');
+
+  const hashParams = new URLSearchParams(hashQuestionIdx !== -1 ? hash.substring(hashQuestionIdx) : '');
+  if (outcome === 'random') {
+    hashParams.delete('outcome');
+    hashParams.delete('status');
+  } else {
+    hashParams.set('outcome', outcome);
+  }
+  // Clear locked variant when switching outcome mode
+  hashParams.delete('variant');
+  hashParams.delete('lock');
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete('outcome');
+  url.searchParams.delete('variant');
+  url.searchParams.delete('lock');
+  url.hash = `${baseHash}?${hashParams.toString()}`;
+
+  window.location.href = url.toString();
+  window.location.reload();
 };
 
 export const switchVariant = (newVariant: ComplianceVariantId, lock: boolean = true): void => {
@@ -181,10 +249,12 @@ export const switchVariant = (newVariant: ComplianceVariantId, lock: boolean = t
   } else {
     hashParams.delete('lock');
   }
+  hashParams.delete('outcome');
 
   const url = new URL(window.location.href);
   url.searchParams.delete('variant');
   url.searchParams.delete('lock');
+  url.searchParams.delete('outcome');
   url.hash = `${baseHash}?${hashParams.toString()}`;
 
   window.location.href = url.toString();
@@ -196,10 +266,17 @@ export const randomizeVisit = (): void => {
   const hashQuestionIdx = hash.indexOf('?');
   const baseHash = hashQuestionIdx !== -1 ? hash.substring(0, hashQuestionIdx) : (hash || '#/');
 
+  // Keep existing outcome parameter (pass/fail) if set, so "randomize" keeps caller's pass/fail constraint
+  const currentOutcome = extractUrlParam('outcome');
+  const hashParams = new URLSearchParams();
+  if (currentOutcome) {
+    hashParams.set('outcome', currentOutcome);
+  }
+
   const url = new URL(window.location.href);
   url.searchParams.delete('variant');
   url.searchParams.delete('lock');
-  url.hash = baseHash;
+  url.hash = hashParams.toString() ? `${baseHash}?${hashParams.toString()}` : baseHash;
 
   const currentCount = parseInt(sessionStorage.getItem('nucomply_visit_count') ?? '0', 10);
   sessionStorage.setItem('nucomply_visit_count', (currentCount + 1).toString());

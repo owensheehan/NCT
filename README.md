@@ -8,10 +8,16 @@ The site features dynamic content generation across multiple banking verticals, 
 
 ## 🎯 Purpose & AI Crawler Integration
 
+## 🎯 Purpose & AI Crawler Integration
+
 When testing an automated AI compliance auditor:
 1. **Dynamic on Every Visit:** Each page visit dynamically rotates marketing copy, promotional claims, interest rates, and compliance postures unless pinned.
-2. **Benchmark Ground-Truth Drawer:** A built-in "Nucomply AI Sandbox" toolbar at the top displays the active visit token, visit counter, active regulatory scenario, and an expandable **AI Benchmark Ground Truth** drawer listing exact statutory violations that the AI is expected to catch.
-3. **Deep-Link Targeting for AI Crawlers:** Append `?variant=<scenario_id>` to any page URL to force a specific compliance state:
+2. **Caller Outcome Control (`?outcome=pass` or `?outcome=fail`):**
+   - **`?outcome=pass`** (or `?status=pass`, `?compliance=pass`): Guarantees the site will **PASS** compliance audits. All mandatory disclosures, accurate APRs/APYs, and risk disclaimers are present, while visit IDs, timestamps, and numbers remain dynamically generated.
+   - **`?outcome=fail`** (or `?status=fail`, `?compliance=fail`): Guarantees the site will **FAIL** compliance audits. It dynamically and randomly rotates across various statutory violations (`minor_omissions`, `high_risk_udaap`, `teaser_trap`) on every visit!
+   - **Default (no argument):** Completely randomized across all compliant and failing states on every visit.
+3. **Benchmark Ground-Truth Drawer:** A built-in "Nucomply AI Sandbox" toolbar at the top displays the active visit token, visit counter, active regulatory scenario, and an expandable **AI Benchmark Ground Truth** drawer listing exact statutory violations that the AI is expected to catch.
+4. **Deep-Link Targeting for AI Crawlers:** Append `?variant=<scenario_id>` to any page URL to force a specific scenario:
    - `?variant=compliant`: Fully compliant disclosure (TILA, CARD Act, Reg DD, FINRA).
    - `?variant=minor_omissions`: Subtle non-compliance (missing adjacent APR, buried footnotes, omitted balance transfer fees).
    - `?variant=high_risk_udaap`: Critical UDAAP violations ("100% Guaranteed Approval", "Free Money", infinite FDIC claims, deceptive factor rates).
