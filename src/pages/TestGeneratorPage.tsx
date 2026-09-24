@@ -327,40 +327,42 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
                         </div>
                       )}
 
-                      {/* URL Box & Actions */}
+                      {/* Card Action Buttons */}
+                      <div className="tc-card-actions">
+                        <Link
+                          to={`/advert/${tc.id}`}
+                          className="tc-btn-advert"
+                          title="View complete dedicated marketing advertisement for this test"
+                        >
+                          <FileText size={13} />
+                          <span>View Complete Advert</span>
+                        </Link>
+                        <a
+                          href={tc.fullUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="tc-btn-launch"
+                          title="Open target test page in new tab"
+                        >
+                          <ExternalLink size={13} />
+                          <span>Launch Page</span>
+                        </a>
+                      </div>
+
+                      {/* URL Bar with Copy Button */}
                       <div className="tc-url-bar">
                         <span className="tc-url-text" title={tc.fullUrl}>
                           {tc.fullUrl}
                         </span>
-                        <div className="tc-url-actions">
-                          <Link
-                            to={`/advert/${tc.id}`}
-                            className="tc-advert-link-btn"
-                            title="View dedicated marketing advert test document with QR code & discrepancies"
-                          >
-                            <FileText size={12} />
-                            <span>View Advert Doc</span>
-                          </Link>
-                          <button
-                            type="button"
-                            className="tc-copy-btn"
-                            onClick={(): void => handleCopyUrl(tc.id, tc.fullUrl)}
-                            title="Copy target test URL"
-                          >
-                            {copiedId === tc.id ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
-                            <span>{copiedId === tc.id ? 'Copied!' : 'Copy'}</span>
-                          </button>
-                          <a
-                            href={tc.fullUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="tc-open-btn"
-                            title="Open URL in new tab"
-                          >
-                            <ExternalLink size={12} />
-                            <span>Launch</span>
-                          </a>
-                        </div>
+                        <button
+                          type="button"
+                          className="tc-copy-btn"
+                          onClick={(): void => handleCopyUrl(tc.id, tc.fullUrl)}
+                          title="Copy target test URL to clipboard"
+                        >
+                          {copiedId === tc.id ? <Check size={12} className="text-green-400" /> : <Copy size={12} />}
+                          <span>{copiedId === tc.id ? 'Copied!' : 'Copy'}</span>
+                        </button>
                       </div>
                     </div>
                   </div>
