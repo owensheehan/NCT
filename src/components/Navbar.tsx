@@ -17,6 +17,7 @@ export const Navbar: React.FC<NavbarProps> = ({ rates }): React.ReactNode => {
     { label: 'Wealth Advisory', path: '/wealth' },
     { label: 'Commercial Lending', path: '/business-loans' },
     { label: 'Legal Disclosures', path: '/disclosures' },
+    { label: '⚡ Test Generator', path: '/test-generator' },
   ];
 
   const defaultRates = [

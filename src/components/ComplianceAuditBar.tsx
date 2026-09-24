@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import type { ComplianceFlag, ComplianceVariantId, VisitSession, VisitLogEntry } from '../types/compliance.ts';
 import {
   switchVariant,
@@ -24,6 +25,7 @@ import {
   Trash2,
   ExternalLink,
   SlidersHorizontal,
+  QrCode,
 } from 'lucide-react';
 
 interface ComplianceAuditBarProps {
@@ -221,6 +223,16 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
               <span>{copiedType === 'fail' ? 'Copied Fail URL!' : 'Fail URL'}</span>
             </button>
           </div>
+
+          {/* Test Generator Page Link */}
+          <Link
+            to="/test-generator"
+            className="audit-btn audit-btn-primary text-cyan-300 border-cyan-700/50"
+            title="Open Test File & QR Code Suite Generator"
+          >
+            <QrCode size={13} className="mr-1 inline text-cyan-400" />
+            <span>QR Test Suite</span>
+          </Link>
 
           {/* Toggle Ground Truth Drawer */}
           <button

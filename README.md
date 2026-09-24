@@ -36,6 +36,18 @@ When testing an automated AI compliance auditor:
 | **Wealth Management** | `#/wealth` | FINRA Rule 2210 & SEC Investment Advisers Act | Prohibition of guaranteed profits, mandatory "Not FDIC Insured • May Lose Value" disclosure, "past performance is no guarantee" caveats. |
 | **Commercial Credit** | `#/business-loans` | CA SB 1235, NY Commercial Finance Disclosure Law & ECOA | Disclosing effective APR alongside Factor Rates (e.g. 1.15 factor rate vs 45%+ APR), personal guarantee transparency. |
 | **Regulatory Archive** | `#/disclosures` | CRA & Statutory Transparency | Community Reinvestment Act (CRA) notice, public fee schedule availability, regulatory charter status. |
+| **Test Suite & QR Generator** | `#/test-generator` | Multi-Vertical Test Runner | Exportable JSON manifests, CSV spreadsheets, and printable/PDF QR code test cards. |
+
+---
+
+## ⚡ Automated Test Suite & QR Code Generator
+
+Visit **[`#/test-generator`](https://owensheehan.github.io/NCT/#/test-generator)** to kick off compliance audits:
+* **Interactive QR Code Matrix:** High-resolution scannable QR codes for each banking vertical, expected outcome (`PASS` vs `FAIL`), and statutory rule.
+* **Download Test File (JSON):** Export a structured JSON test harness manifest containing all target URLs, expected outcomes, and violation descriptions.
+* **Download CSV Test Runner:** Export a spreadsheet for Excel, Postman, or Jira QA pipelines.
+* **Printable / PDF QR Sheet:** Generates a high-density, printable 2-column test card sheet with scannable QR codes ready for camera scanning or automated OCR.
+* **Custom Base URL:** Change the base URL on the fly (e.g. to test local staging `http://127.0.0.1:5173/` or production `https://owensheehan.github.io/NCT/`).
 
 ---
 
