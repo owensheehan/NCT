@@ -29,6 +29,16 @@ export interface VisitSession {
   isLocked: boolean;
 }
 
+export interface VisitLogEntry {
+  visitId: string;
+  timestamp: string;
+  path: string;
+  variantId: ComplianceVariantId;
+  riskLevel: 'LOW' | 'MEDIUM' | 'CRITICAL';
+  userAgent: string;
+  expectedFlagCount: number;
+}
+
 /* Mortgage product types */
 export interface MortgageOffer {
   id: string;
