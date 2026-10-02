@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HomePage } from './pages/HomePage.tsx';
 import { MortgagesPage } from './pages/MortgagesPage.tsx';
 import { CreditCardsPage } from './pages/CreditCardsPage.tsx';
@@ -9,6 +9,13 @@ import { BusinessLoansPage } from './pages/BusinessLoansPage.tsx';
 import { DisclosuresPage } from './pages/DisclosuresPage.tsx';
 import { TestGeneratorPage } from './pages/TestGeneratorPage.tsx';
 import { AdvertDocumentPage } from './pages/AdvertDocumentPage.tsx';
+
+const getBasename = (): string => {
+  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/NCT')) {
+    return '/NCT';
+  }
+  return '';
+};
 
 const ScrollToTop: React.FC = (): null => {
   const { pathname } = useLocation();
@@ -22,7 +29,7 @@ const ScrollToTop: React.FC = (): null => {
 
 export const App: React.FC = (): React.ReactNode => {
   return (
-    <HashRouter>
+    <BrowserRouter basename={getBasename()}>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -37,7 +44,7 @@ export const App: React.FC = (): React.ReactNode => {
         <Route path="/advert" element={<AdvertDocumentPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

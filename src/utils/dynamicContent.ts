@@ -26,26 +26,47 @@ const PASS_VARIANTS: ComplianceVariantId[] = [
 const AUDIT_STORAGE_KEY = 'nucomply_audit_log';
 
 /**
- * Extracts query parameters from both window.location.search AND hash query (for GitHub Pages HashRouter).
+ * Extracts query parameters from hash query (prioritized) OR window.location.search.
  */
-const extractUrlParam = (paramName: string): string | null => {
-  const searchParams = new URLSearchParams(window.location.search);
-  const searchVal = searchParams.get(paramName);
-  if (searchVal) return searchVal;
-
+export const extractUrlParam = (paramName: string): string | null => {
+  // 1. Check hash query first (prioritize hash parameters)
   const hash = window.location.hash;
   const hashQuestionIdx = hash.indexOf('?');
   if (hashQuestionIdx !== -1) {
     const hashParams = new URLSearchParams(hash.substring(hashQuestionIdx));
     const hashVal = hashParams.get(paramName);
-    if (hashVal) return hashVal;
+    if (hashVal !== null && hashVal !== '') return hashVal;
   }
+
+  // 2. Check location.search
+  const searchParams = new URLSearchParams(window.location.search);
+  const searchVal = searchParams.get(paramName);
+  if (searchVal !== null && searchVal !== '') return searchVal;
 
   return null;
 };
 
 /**
- * Parses caller outcome preference (?outcome=pass|fail, ?status=pass|fail, ?compliance=pass|fail, ?mode=pass|fail)
+ * Detects if the page should render in clean mode (no sandbox toolbar, no grade/expected-flags UI).
+ * Triggered by ?chrome=off or ?clean=true in hash query or URL search params.
+ */
+export const isCleanMode = (): boolean => {
+  const chrome = (extractUrlParam('chrome') ?? '').toLowerCase().trim();
+  const clean = (extractUrlParam('clean') ?? '').toLowerCase().trim();
+  return (
+    chrome === 'off' ||
+    chrome === 'false' ||
+    chrome === '0' ||
+    chrome === 'none' ||
+    clean === 'true' ||
+    clean === '1' ||
+    clean === 'on'
+  );
+};
+
+/**
+ * Parses caller outcome preference (?outcome=pass|fail, ?status=pass|fail, ?compliance=pass|fail, ?mode=pass|fail).
+ * If variant is passed without outcome, infers outcome from the variant category.
  */
 export const getRequestedOutcome = (): DesiredOutcome => {
   const rawParam = (
@@ -58,6 +79,14 @@ export const getRequestedOutcome = (): DesiredOutcome => {
 
   if (rawParam === 'pass' || rawParam === 'passing') return 'pass';
   if (rawParam === 'fail' || rawParam === 'failing') return 'fail';
+
+  // If no explicit outcome is provided, check if a specific variant was passed
+  const paramVariant = extractUrlParam('variant') as ComplianceVariantId | null;
+  if (paramVariant) {
+    if (PASS_VARIANTS.includes(paramVariant)) return 'pass';
+    if (FAIL_VARIANTS.includes(paramVariant)) return 'fail';
+  }
+
   return 'random';
 };
 
@@ -98,6 +127,10 @@ export const recordVisit = (
   riskLevel: 'LOW' | 'MEDIUM' | 'CRITICAL',
   expectedFlagCount: number
 ): void => {
+  if (isCleanMode()) {
+    return;
+  }
+
   const entry: VisitLogEntry = {
     visitId: session.visitId,
     timestamp: session.timestamp,

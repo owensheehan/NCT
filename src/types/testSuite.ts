@@ -3,13 +3,16 @@ import type { ComplianceVariantId } from './compliance.ts';
 export interface TestCaseDefinition {
   id: string;
   name: string;
-  vertical: 'Mortgages' | 'Credit Cards' | 'Savings & Deposits' | 'Wealth Advisory' | 'Commercial Credit' | 'Statutory Disclosures';
+  vertical: 'Mortgages' | 'Credit Cards' | 'Savings & Deposits' | 'Wealth Advisory' | 'Commercial Credit' | 'Statutory Disclosures' | 'Linked Files & Downloads';
   subpath: string;
   expectedOutcome: 'PASS' | 'FAIL';
   variantId: ComplianceVariantId;
   regulatoryFramework: string;
   description: string;
   expectedViolations: string[];
+  fileExercise?: string;
+  captureExpectedBadge?: 'Captured' | 'Failed';
+  captureExpectedMessage?: string;
 }
 
 export interface TestCaseWithQr extends TestCaseDefinition {
@@ -73,4 +76,6 @@ export interface AdvertDocumentData {
   nmlsId: string;
   equalHousingLender: boolean;
   memberFdic: boolean;
+  captureExpectedBadge?: 'Captured' | 'Failed';
+  captureExpectedMessage?: string;
 }

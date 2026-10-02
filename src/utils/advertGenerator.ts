@@ -1056,23 +1056,77 @@ export const generateAdvertDocument = async (
   // =========================================================================
   // 6. STATUTORY DISCLOSURES VERTICAL
   // =========================================================================
-  if (tc.expectedOutcome === 'PASS') {
+  if (tc.vertical === 'Statutory Disclosures') {
+    if (tc.expectedOutcome === 'PASS') {
+      const productTiers: ProductTierAdvert[] = [
+        {
+          name: 'Community Reinvestment Act Public File',
+          rate: 'Outstanding CRA Rating',
+          apr: null,
+          termOrLimit: 'Updated Semi-Annually',
+          monthlyPaymentOrFee: 'Public Document',
+          keyFeature: 'Branch Demographics & Community Development Lending',
+        },
+        {
+          name: 'Master Retail Fee Schedule',
+          rate: 'Complete Transparency',
+          apr: null,
+          termOrLimit: 'All 42 Fee Codes',
+          monthlyPaymentOrFee: 'Zero Hidden Fees',
+          keyFeature: 'Overdraft, Wire, & Account Maintenance Schedules',
+        },
+      ];
+
+      return {
+        testId: tc.id,
+        testName: tc.name,
+        vertical: tc.vertical,
+        campaignTitle: 'Apex Horizon Bancorp Statutory & Governance Notice',
+        eyebrowTag: 'COMMUNITY REINVESTMENT ACT • PUBLIC STATUTORY ARCHIVE',
+        headline: 'Commitment to Community Investment & Fair Lending Governance',
+        subheadline:
+          'Apex Horizon Bank is proud to maintain an Outstanding rating under the Community Reinvestment Act (CRA). Review our statutory public files, branch assessment areas, and itemized account fee schedules.',
+        featuredBadge: 'CRA & STATUTORY COMPLIANT',
+        featuredOffer: 'CRA Public Examination File',
+        advertisedRate: 'Outstanding CRA Rating',
+        advertisedApr: null,
+        secondaryMetric: '100% Itemized Fee Schedule Transparency',
+        landingPageUrl,
+        qrDataUrl,
+        expectedOutcome: 'PASS',
+        alignmentStatus: 'ALIGNED_WITH_LANDING_PAGE',
+        discrepancies: [],
+        groundTruthDiscrepancies: [],
+        bulletPoints: [
+          'Complete Community Reinvestment Act (CRA) public file available for inspection at all branch offices.',
+          'Itemized deposit account fee schedule detailing overdraft policies, wire transfer charges, and waiver criteria.',
+          'Primary federal supervisory oversight by the OCC, Federal Reserve Board, and Consumer Financial Protection Bureau.',
+          'Fair Housing and Equal Credit Opportunity certifications published across all retail operations.',
+        ],
+        productTiers,
+        representativeExample:
+          'Apex Horizon Bank N.A. operates in strict compliance with 12 CFR Part 25 (Community Reinvestment Act), 12 CFR Part 1002 (Equal Credit Opportunity Act), and 12 CFR Part 1026 (Truth in Lending Act).',
+        qrCalloutText:
+          'Scan with your smartphone camera to access our digital regulatory archive and view complete fee schedules.',
+        legalFinePrint:
+          'Apex Horizon Bank N.A. Member FDIC. Equal Housing Lender. Copies of our CRA Public File are available upon written request to the Compliance Officer.',
+        advertToken,
+        publishedDate,
+        nmlsId: '491022',
+        equalHousingLender: true,
+        memberFdic: true,
+      };
+    }
+
+    // TC-DISC-02-FAIL
     const productTiers: ProductTierAdvert[] = [
       {
-        name: 'Community Reinvestment Act Public File',
-        rate: 'Outstanding CRA Rating',
+        name: 'Private Sovereign Banking Notice',
+        rate: 'Exempt Status',
         apr: null,
-        termOrLimit: 'Updated Semi-Annually',
-        monthlyPaymentOrFee: 'Public Document',
-        keyFeature: 'Branch Demographics & Community Development Lending',
-      },
-      {
-        name: 'Master Retail Fee Schedule',
-        rate: 'Complete Transparency',
-        apr: null,
-        termOrLimit: 'All 42 Fee Codes',
-        monthlyPaymentOrFee: 'Zero Hidden Fees',
-        keyFeature: 'Overdraft, Wire, & Account Maintenance Schedules',
+        termOrLimit: 'Private Charter',
+        monthlyPaymentOrFee: 'Unrestricted Discretion',
+        keyFeature: 'Exempt from CFPB, TILA, and FDIC Rules',
       },
     ];
 
@@ -1080,35 +1134,200 @@ export const generateAdvertDocument = async (
       testId: tc.id,
       testName: tc.name,
       vertical: tc.vertical,
-      campaignTitle: 'Apex Horizon Bancorp Statutory & Governance Notice',
-      eyebrowTag: 'COMMUNITY REINVESTMENT ACT • PUBLIC STATUTORY ARCHIVE',
-      headline: 'Commitment to Community Investment & Fair Lending Governance',
+      campaignTitle: 'Apex Sovereign Private Banking Notice',
+      eyebrowTag: 'SOVEREIGN BANKING EXEMPTION • PRIVATE COMMERCIAL CHARTER',
+      headline: 'Sovereign Bank Charter: Unrestricted Financing Without Government Red Tape!',
       subheadline:
-        'Apex Horizon Bank is proud to maintain an Outstanding rating under the Community Reinvestment Act (CRA). Review our statutory public files, branch assessment areas, and itemized account fee schedules.',
-      featuredBadge: 'CRA & STATUTORY COMPLIANT',
-      featuredOffer: 'CRA Public Examination File',
-      advertisedRate: 'Outstanding CRA Rating',
+        'Apex Horizon Bank operates under a private sovereign commercial charter exempt from standard federal regulatory filings, CFPB oversight, and statutory CRA reporting mandates.',
+      featuredBadge: 'PRIVATE SOVEREIGN EXEMPTION',
+      featuredOffer: 'Sovereign Private Banking Exemption Notice',
+      advertisedRate: 'Exempt from Federal Disclosure Rules',
       advertisedApr: null,
-      secondaryMetric: '100% Itemized Fee Schedule Transparency',
+      secondaryMetric: 'Zero Mandatory Government Filings or Public CRA Inspections',
       landingPageUrl,
       qrDataUrl,
-      expectedOutcome: 'PASS',
-      alignmentStatus: 'ALIGNED_WITH_LANDING_PAGE',
-      discrepancies: [],
-      groundTruthDiscrepancies: [],
+      expectedOutcome: 'FAIL',
+      alignmentStatus: 'DECEPTIVE_ADVERT_CLAIMS',
+      discrepancies: [
+        'Advert falsely claims the institution is "Exempt from CFPB, TILA, and FDIC oversight".',
+        'Advert fails to provide mandatory Community Reinvestment Act (CRA) public notices or account fee schedules.',
+      ],
+      groundTruthDiscrepancies: [
+        {
+          category: 'Fraudulent Assertion of Regulatory Exemption',
+          advertClaim: 'Institution claims private sovereign exemption from CFPB and federal banking regulations',
+          landingPageTruth: 'All FDIC-insured depository institutions are strictly subject to federal consumer protection statutes',
+          regulatoryStandard: 'Federal Depository Insurance Act / CFPB Authority under Dodd-Frank Title X',
+        },
+      ],
       bulletPoints: [
-        'Complete Community Reinvestment Act (CRA) public file available for inspection at all branch offices.',
-        'Itemized deposit account fee schedule detailing overdraft policies, wire transfer charges, and waiver criteria.',
-        'Primary federal supervisory oversight by the OCC, Federal Reserve Board, and Consumer Financial Protection Bureau.',
-        'Fair Housing and Equal Credit Opportunity certifications published across all retail operations.',
+        'Operating under private sovereign banking charter.',
+        'Exempt from standard federal disclosure and filing mandates.',
+        'Streamlined execution with zero regulatory delay.',
+        'Internal proprietary fee schedules determined solely by bank management.',
       ],
       productTiers,
       representativeExample:
-        'Apex Horizon Bank N.A. operates in strict compliance with 12 CFR Part 25 (Community Reinvestment Act), 12 CFR Part 1002 (Equal Credit Opportunity Act), and 12 CFR Part 1026 (Truth in Lending Act).',
+        'Private banking institution. Account terms and fees determined solely by bank officers without public disclosure.',
       qrCalloutText:
-        'Scan with your smartphone camera to access our digital regulatory archive and view complete fee schedules.',
+        'Scan with your smartphone camera to access our private charter agreement.',
       legalFinePrint:
-        'Apex Horizon Bank N.A. Member FDIC. Equal Housing Lender. Copies of our CRA Public File are available upon written request to the Compliance Officer.',
+        'Private institution. Not subject to public CRA disclosure requirements.',
+      advertToken,
+      publishedDate,
+      nmlsId: '491022',
+      equalHousingLender: false,
+      memberFdic: false,
+    };
+  }
+
+  // =========================================================================
+  // 7. LINKED FILES & DOWNLOADS VERTICAL (LLM-4188 HANDOFF EXERCISES B1 - B14)
+  // =========================================================================
+  if (tc.vertical === 'Linked Files & Downloads') {
+    // Mortgage disclosure linked files (B1, B2, B4, B13)
+    // Contradicts the advert: Advert promises zero lender fees, no prepayment penalty, 12-month lock
+    // PDF Schedule assesses $3,450 origination, 5% prepayment penalty, month 7 reset to 10.450% APR
+    if (
+      tc.id === 'TC-FILE-B01-PASS' ||
+      tc.id === 'TC-FILE-B02-PASS' ||
+      tc.id === 'TC-FILE-B04-PASS' ||
+      tc.id === 'TC-FILE-B13-PASS'
+    ) {
+      const productTiers: ProductTierAdvert[] = [
+        {
+          name: 'Apex 0.99% Miracle Mortgage',
+          rate: '0.990% Intro Rate',
+          apr: null,
+          termOrLimit: 'First 12 Months',
+          monthlyPaymentOrFee: 'Only $499/Month',
+          keyFeature: 'Zero Lender Fees • No Prepayment Penalties',
+        },
+        {
+          name: 'Fixed Purchase Alternative',
+          rate: '1.490% Intro Rate',
+          apr: null,
+          termOrLimit: 'First 24 Months',
+          monthlyPaymentOrFee: '$699/Month',
+          keyFeature: 'Low Introductory Cash Flow Guarantee',
+        },
+      ];
+
+      return {
+        testId: tc.id,
+        testName: tc.name,
+        vertical: tc.vertical,
+        campaignTitle: 'Apex 0.99% Miracle Mortgage Promotional Circular',
+        eyebrowTag: 'FLASH PROMOTION • 0.99% INTRO RATE • ZERO LENDER FEES',
+        headline: 'Slash Your Mortgage to 0.99% — Zero Closing Costs & Zero Prepayment Penalties!',
+        subheadline:
+          'Cut your monthly payments in half! Apex Horizon Bank guarantees an unprecedented 0.990% introductory rate on home loans up to $650,000 with zero lender underwriting fees and zero prepayment penalties.',
+        featuredBadge: '0.99% SPECIAL PROMOTION',
+        featuredOffer: 'Apex Flex-Payment 0.99% Teaser Mortgage',
+        advertisedRate: '0.990% Promotional Rate',
+        advertisedApr: null,
+        secondaryMetric: 'Pay Just $499/Month • Zero Lender Closing Fees • No Prepayment Penalties',
+        landingPageUrl,
+        qrDataUrl,
+        expectedOutcome: tc.expectedOutcome,
+        alignmentStatus: 'CONFLICTING_RATES_OR_TERMS',
+        captureExpectedBadge: tc.captureExpectedBadge ?? 'Captured',
+        captureExpectedMessage: tc.captureExpectedMessage,
+        discrepancies: [
+          'Advert promises "Zero Lender Closing Fees", while linked PDF Schedule assesses $3,450 origination and $1,500 underwriting fees.',
+          'Advert promises "No Prepayment Penalties Ever", while linked PDF Section 4 levies a mandatory 5% ($15,000) penalty on payoffs within 60 months.',
+          'Advert claims "0.99% locked for your entire first year", while linked PDF states introductory rate resets on month 7 to 10.450% APR.',
+        ],
+        groundTruthDiscrepancies: [
+          {
+            category: 'Contradiction: Mandatory Lender Origination Fees',
+            advertClaim: 'Prominently claims "Zero Lender Closing Fees Paid By Bank"',
+            landingPageTruth: 'Linked PDF Schedule: Assesses $3,450 origination fee, $850 processing fee, and $650 doc prep fee',
+            regulatoryStandard: 'CFPB UDAAP / 12 U.S.C. § 5536 & TILA 12 CFR § 1026.24(d)',
+          },
+          {
+            category: 'Contradiction: Prepayment Lockout Penalty',
+            advertClaim: 'Promotes "Total Flexibility — No Prepayment Penalties Ever, Refinance Anytime"',
+            landingPageTruth: 'Linked PDF Section 4: Mandatory 5.00% ($15,000 minimum) penalty if refinanced within 60 months',
+            regulatoryStandard: 'Dodd-Frank Act / 12 CFR § 1026.43(g) Prepayment Restrictions',
+          },
+          {
+            category: 'Contradiction: Promotional Rate Duration',
+            advertClaim: 'Headline: "Pay Just $499/Month for Your Entire First Year (12 Months)"',
+            landingPageTruth: 'Linked PDF Section 1: 0.990% rate valid for 6 months only; resets on Month 7 to SOFR + 5.75% (10.450% APR)',
+            regulatoryStandard: 'TILA 12 CFR § 1026.24(f)(2) Discounted Variable-Rate Transactions',
+          },
+        ],
+        bulletPoints: [
+          'Pay just $499/month on conforming home loans up to $650,000.',
+          'Zero lender processing fees or upfront application charges.',
+          'No prepayment penalties ever: refinance or pay off your loan at any time.',
+          'Fast digital pre-approval with 3% down payment on primary residences.',
+        ],
+        productTiers,
+        representativeExample:
+          'Payment of $499 reflects promotional introductory tier. Scan QR code or visit URL below to review the official 3-page program fee disclosure and note terms.',
+        qrCalloutText:
+          'Scan with your smartphone camera to access official regulatory rate disclosures and verify note terms.',
+        legalFinePrint:
+          'Apex Horizon Bank N.A. Member FDIC. Equal Housing Lender. NMLS #491022. Terms subject to formal program disclosure schedule.',
+        advertToken,
+        publishedDate,
+        nmlsId: '491022',
+        equalHousingLender: true,
+        memberFdic: true,
+      };
+    }
+
+    // Generic handler for other B files (B3, B5, B6, B7, B8, B9, B10, B11, B12, B14)
+    const productTiers: ProductTierAdvert[] = [
+      {
+        name: tc.name,
+        rate: tc.fileExercise ?? 'Linked File',
+        apr: null,
+        termOrLimit: tc.regulatoryFramework,
+        monthlyPaymentOrFee: tc.captureExpectedBadge === 'Captured' ? 'Expected Captured' : 'Expected Failed',
+        keyFeature: tc.captureExpectedMessage ?? tc.description,
+      },
+    ];
+
+    return {
+      testId: tc.id,
+      testName: tc.name,
+      vertical: tc.vertical,
+      campaignTitle: `Apex Horizon Bank — ${tc.name}`,
+      eyebrowTag: `LINKED DESTINATION VERIFICATION • EXERCISE ${tc.fileExercise ?? 'TEST'}`,
+      headline: `Official Product & Terms Document — ${tc.name}`,
+      subheadline: tc.description,
+      featuredBadge: `TARGET CAPTURE: ${tc.captureExpectedBadge?.toUpperCase() ?? tc.expectedOutcome}`,
+      featuredOffer: tc.name,
+      advertisedRate: 'Program Disclosures Attached',
+      advertisedApr: null,
+      secondaryMetric: `Linked Destination: ${tc.subpath}`,
+      landingPageUrl,
+      qrDataUrl,
+      expectedOutcome: tc.expectedOutcome,
+      alignmentStatus: tc.expectedOutcome === 'PASS' ? 'ALIGNED_WITH_LANDING_PAGE' : 'DECEPTIVE_ADVERT_CLAIMS',
+      captureExpectedBadge: tc.captureExpectedBadge ?? (tc.expectedOutcome === 'PASS' ? 'Captured' : 'Failed'),
+      captureExpectedMessage: tc.captureExpectedMessage,
+      discrepancies: tc.expectedViolations,
+      groundTruthDiscrepancies: tc.expectedViolations.map((v: string) => ({
+        category: tc.regulatoryFramework,
+        advertClaim: `Linked Destination: ${tc.subpath}`,
+        landingPageTruth: v,
+        regulatoryStandard: tc.regulatoryFramework,
+      })),
+      bulletPoints: [
+        `Destination URL: ${landingPageUrl}`,
+        `Expected Capture Status: ${tc.captureExpectedBadge ?? (tc.expectedOutcome === 'PASS' ? 'Captured' : 'Failed')}`,
+        `Target Requirement: ${tc.captureExpectedMessage ?? tc.description}`,
+        'Scan QR code below with camera to resolve destination URL directly.',
+      ],
+      productTiers,
+      representativeExample: `Test case ${tc.id} validates marketing review capture of linked files: ${tc.description}`,
+      qrCalloutText: `Scan QR code with your smartphone camera to access the linked destination file: ${tc.subpath}`,
+      legalFinePrint:
+        'Apex Horizon Bank N.A. Synthetic Testbed Document. Designed for automated AI compliance inspection benchmarking.',
       advertToken,
       publishedDate,
       nmlsId: '491022',
@@ -1117,67 +1336,7 @@ export const generateAdvertDocument = async (
     };
   }
 
-  // TC-DISC-02-FAIL
-  const productTiers: ProductTierAdvert[] = [
-    {
-      name: 'Private Sovereign Banking Notice',
-      rate: 'Exempt Status',
-      apr: null,
-      termOrLimit: 'Private Charter',
-      monthlyPaymentOrFee: 'Unrestricted Discretion',
-      keyFeature: 'Exempt from CFPB, TILA, and FDIC Rules',
-    },
-  ];
-
-  return {
-    testId: tc.id,
-    testName: tc.name,
-    vertical: tc.vertical,
-    campaignTitle: 'Apex Sovereign Private Banking Notice',
-    eyebrowTag: 'SOVEREIGN BANKING EXEMPTION • PRIVATE COMMERCIAL CHARTER',
-    headline: 'Sovereign Bank Charter: Unrestricted Financing Without Government Red Tape!',
-    subheadline:
-      'Apex Horizon Bank operates under a private sovereign commercial charter exempt from standard federal regulatory filings, CFPB oversight, and statutory CRA reporting mandates.',
-    featuredBadge: 'PRIVATE SOVEREIGN EXEMPTION',
-    featuredOffer: 'Sovereign Private Banking Exemption Notice',
-    advertisedRate: 'Exempt from Federal Disclosure Rules',
-    advertisedApr: null,
-    secondaryMetric: 'Zero Mandatory Government Filings or Public CRA Inspections',
-    landingPageUrl,
-    qrDataUrl,
-    expectedOutcome: 'FAIL',
-    alignmentStatus: 'DECEPTIVE_ADVERT_CLAIMS',
-    discrepancies: [
-      'Advert falsely claims the institution is "Exempt from CFPB, TILA, and FDIC oversight".',
-      'Advert fails to provide mandatory Community Reinvestment Act (CRA) public notices or account fee schedules.',
-    ],
-    groundTruthDiscrepancies: [
-      {
-        category: 'Fraudulent Assertion of Regulatory Exemption',
-        advertClaim: 'Institution claims private sovereign exemption from CFPB and federal banking regulations',
-        landingPageTruth: 'All FDIC-insured depository institutions are strictly subject to federal consumer protection statutes',
-        regulatoryStandard: 'Federal Depository Insurance Act / CFPB Authority under Dodd-Frank Title X',
-      },
-    ],
-    bulletPoints: [
-      'Operating under private sovereign banking charter.',
-      'Exempt from standard federal disclosure and filing mandates.',
-      'Streamlined execution with zero regulatory delay.',
-      'Internal proprietary fee schedules determined solely by bank management.',
-    ],
-    productTiers,
-    representativeExample:
-      'Private banking institution. Account terms and fees determined solely by bank officers without public disclosure.',
-    qrCalloutText:
-      'Scan with your smartphone camera to access our private charter agreement.',
-    legalFinePrint:
-      'Private institution. Not subject to public CRA disclosure requirements.',
-    advertToken,
-    publishedDate,
-    nmlsId: '491022',
-    equalHousingLender: false,
-    memberFdic: true,
-  };
+  throw new Error(`Unhandled test case: ${tc.id}`);
 };
 
 /**
@@ -1265,6 +1424,7 @@ export const printAdvertBookletHtml = (
     @media print {
       body { background: #fff; padding: 0; }
       .no-print { display: none; }
+      .ad-outcome-tag { display: none !important; }
       .advert-doc-page {
         border: none;
         box-shadow: none;
@@ -1479,7 +1639,7 @@ export const printAdvertBookletHtml = (
         <div class="ad-ref-box">
           <div>DOCUMENT CODE: ${ad.advertToken}</div>
           <div>DATE: ${ad.publishedDate}</div>
-          <div style="font-weight: 700; color: ${ad.expectedOutcome === 'PASS' ? '#059669' : '#e11d48'};">
+          <div class="ad-outcome-tag" style="font-weight: 700; color: ${ad.expectedOutcome === 'PASS' ? '#059669' : '#e11d48'};">
             TEST SPECIFICATION: [${ad.expectedOutcome}]
           </div>
         </div>

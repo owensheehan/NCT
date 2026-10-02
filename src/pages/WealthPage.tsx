@@ -1,13 +1,19 @@
 import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { wealthVariants } from '../data/wealthData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { TrendingUp, AlertTriangle, ShieldCheck, ArrowRight, Briefcase } from 'lucide-react';
 
 export const WealthPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(wealthVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -132,33 +138,35 @@ export const WealthPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* SEC / FINRA Compliance Guidance */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <Briefcase size={20} className="text-indigo-400" />
-                <h3>FINRA Rule 2210 & SEC Investment Communications Checklist:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <Briefcase size={20} className="text-indigo-400" />
+                  <h3>FINRA Rule 2210 & SEC Investment Communications Checklist:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>Prohibition of Performance Guarantees:</strong> Under FINRA Rule 2210(d)(1)(D),
+                    no financial marketing material may promise guaranteed returns or claim that investments
+                    are "risk-free".
+                  </li>
+                  <li>
+                    <strong>Interagency Nondeposit Investment Statement:</strong> Retail sales of securities
+                    and wealth products MUST clearly state that they are NOT FDIC insured, NOT bank
+                    guaranteed, and MAY lose value.
+                  </li>
+                  <li>
+                    <strong>Past Performance Disclosure:</strong> Any historical performance or backtested
+                    projection must be accompanied by the mandatory disclosure: "Past performance is no
+                    guarantee of future results."
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>Prohibition of Performance Guarantees:</strong> Under FINRA Rule 2210(d)(1)(D),
-                  no financial marketing material may promise guaranteed returns or claim that investments
-                  are "risk-free".
-                </li>
-                <li>
-                  <strong>Interagency Nondeposit Investment Statement:</strong> Retail sales of securities
-                  and wealth products MUST clearly state that they are NOT FDIC insured, NOT bank
-                  guaranteed, and MAY lose value.
-                </li>
-                <li>
-                  <strong>Past Performance Disclosure:</strong> Any historical performance or backtested
-                  projection must be accompanied by the mandatory disclosure: "Past performance is no
-                  guarantee of future results."
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer

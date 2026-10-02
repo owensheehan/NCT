@@ -9,6 +9,7 @@ import {
   getVisitAuditLog,
   clearVisitAuditLog,
   exportAuditLogAsJson,
+  isCleanMode,
 } from '../utils/dynamicContent.ts';
 import {
   ShieldAlert,
@@ -43,6 +44,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
   riskLevel,
   variantSummary,
 }): React.ReactNode => {
+  const clean = isCleanMode();
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [showDrawer, setShowDrawer] = useState<boolean>(false);
   const [activeDrawerTab, setActiveDrawerTab] = useState<'ground_truth' | 'audit_log'>('ground_truth');
@@ -51,9 +53,15 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
   const [webhookSaved, setWebhookSaved] = useState<boolean>(false);
 
   useEffect((): void => {
+    if (clean) return;
     recordVisit(session, riskLevel, flags.length);
     setAuditLogs(getVisitAuditLog());
-  }, [session, riskLevel, flags.length]);
+  }, [clean, session, riskLevel, flags.length]);
+
+  // If clean mode is enabled (?chrome=off or ?clean=true), completely omit the sandbox toolbar
+  if (clean) {
+    return null;
+  }
 
   const handleCopyUrl = (type: 'current' | 'pass' | 'fail'): void => {
     const hash = window.location.hash || '#/';
@@ -128,7 +136,7 @@ export const ComplianceAuditBar: React.FC<ComplianceAuditBarProps> = ({
           {/* Caller Target Mode Indicator */}
           <div className="audit-mode-chip">
             <SlidersHorizontal size={12} className="mr-1 inline" />
-            <span>Mode: <strong>{session.outcomeMode.toUpperCase()}</strong></span>
+            <span>Mode: <strong>{session.isLocked ? `${session.outcomeMode.toUpperCase()} (LOCKED)` : session.outcomeMode.toUpperCase()}</strong></span>
           </div>
         </div>
 

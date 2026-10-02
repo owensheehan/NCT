@@ -1,13 +1,19 @@
 import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { businessLoansVariants } from '../data/businessLoansData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { Building2, ArrowRight, ShieldCheck } from 'lucide-react';
 
 export const BusinessLoansPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(businessLoansVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -112,32 +118,34 @@ export const BusinessLoansPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Commercial Financing Disclosure Guidance */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <ShieldCheck size={20} className="text-emerald-400" />
-                <h3>Commercial Financing Disclosure & ECOA Inspection Checklist:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <ShieldCheck size={20} className="text-emerald-400" />
+                  <h3>Commercial Financing Disclosure & ECOA Inspection Checklist:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>Commercial Financing Disclosure Laws (CA SB 1235 / NY CFDL):</strong> Lenders
+                    offering commercial financing under $2,500,000 must disclose total finance charges,
+                    annualized APR, and payment amounts in standardized disclosure formats.
+                  </li>
+                  <li>
+                    <strong>Factor Rate Obfuscation:</strong> Advertising a "1.15 Factor Rate" as a "15% interest
+                    rate" misleads borrowers because factor rates do not account for principal reduction over time,
+                    often resulting in annualized APRs of 50% to 100%+.
+                  </li>
+                  <li>
+                    <strong>Recourse & Personal Guarantee Transparency:</strong> Promising "Zero Personal
+                    Liability" when security agreements attach personal assets is an actionable CFPB/FTC UDAAP violation.
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>Commercial Financing Disclosure Laws (CA SB 1235 / NY CFDL):</strong> Lenders
-                  offering commercial financing under $2,500,000 must disclose total finance charges,
-                  annualized APR, and payment amounts in standardized disclosure formats.
-                </li>
-                <li>
-                  <strong>Factor Rate Obfuscation:</strong> Advertising a "1.15 Factor Rate" as a "15% interest
-                  rate" misleads borrowers because factor rates do not account for principal reduction over time,
-                  often resulting in annualized APRs of 50% to 100%+.
-                </li>
-                <li>
-                  <strong>Recourse & Personal Guarantee Transparency:</strong> Promising "Zero Personal
-                  Liability" when security agreements attach personal assets is an actionable CFPB/FTC UDAAP violation.
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer

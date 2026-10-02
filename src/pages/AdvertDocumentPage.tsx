@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import type { AdvertDocumentData, TestCaseDefinition, ProductTierAdvert, GroundTruthDiscrepancy } from '../types/testSuite.ts';
 import { STANDARD_TEST_CASES } from '../utils/testSuiteGenerator.ts';
 import {
@@ -7,6 +7,7 @@ import {
   getTestCaseById,
   printSingleAdvertHtml,
 } from '../utils/advertGenerator.ts';
+import { isCleanMode } from '../utils/dynamicContent.ts';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import {
@@ -30,6 +31,8 @@ import {
 export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
   const { testId } = useParams<{ testId?: string }>();
   const navigate = useNavigate();
+  useLocation();
+  const clean = isCleanMode();
 
   // Find active test case definition, default to first test if not specified
   const activeTestCase = useMemo((): TestCaseDefinition => {
@@ -50,7 +53,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
 
   const [advertDoc, setAdvertDoc] = useState<AdvertDocumentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [randomSeed, setRandomSeed] = useState<number>(Date.now());
+  const [randomSeed, setRandomSeed] = useState<number>(() => Date.now());
   const [showInspectorNotes, setShowInspectorNotes] = useState<boolean>(true);
 
   // Generate advert document data
@@ -99,8 +102,9 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
 
       <main className="main-content">
         {/* Navigation & Controls Utility Bar */}
-        <section className="advert-controls-bar">
-          <div className="advert-controls-container">
+        {!clean && (
+          <section className="advert-controls-bar">
+            <div className="advert-controls-container">
             <div className="controls-top-row">
               <Link to="/test-generator" className="back-link">
                 <ArrowLeft size={16} />
@@ -219,6 +223,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
             </div>
           </div>
         </section>
+        )}
 
         {/* Advert Presentation Stage */}
         <section className="advert-stage-section">
@@ -243,15 +248,17 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                     <div className="sheet-header-meta">
                       <div className="sheet-token-text">DOCUMENT ID: {advertDoc.advertToken}</div>
                       <div className="sheet-token-text">PUBLISHED: {advertDoc.publishedDate}</div>
-                      <div className="sheet-badge-row">
-                        <span
-                          className={`sheet-status-tag ${
-                            advertDoc.expectedOutcome === 'PASS' ? 'tag-pass' : 'tag-fail'
-                          }`}
-                        >
-                          TEST BENCHMARK: [{advertDoc.expectedOutcome}]
-                        </span>
-                      </div>
+                      {!clean && (
+                        <div className="sheet-badge-row">
+                          <span
+                            className={`sheet-status-tag ${
+                              advertDoc.expectedOutcome === 'PASS' ? 'tag-pass' : 'tag-fail'
+                            }`}
+                          >
+                            TEST BENCHMARK: [{advertDoc.expectedOutcome}]
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </header>
 
@@ -390,7 +397,7 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                 </article>
 
                 {/* Ground Truth Cross-Check Discrepancy Panel (For Compliance Auditors & AI Benchmarks) */}
-                {showInspectorNotes && (
+                {!clean && showInspectorNotes && (
                   <div className="inspector-panel-container">
                     {advertDoc.groundTruthDiscrepancies.length > 0 ? (
                       <div className="discrepancy-audit-panel">
@@ -461,31 +468,33 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Technical Guidance Section */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <QrCode size={20} className="text-cyan-400" />
-                <h3>How to Test Marketing Adverts with the Nucomply Platform:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <QrCode size={20} className="text-cyan-400" />
+                  <h3>How to Test Marketing Adverts with the Nucomply Platform:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>Multimodal Cross-Inspection:</strong> Ingest the complete marketing advert via OCR or vision model,
+                    extract advertised claims (rates, APRs, fees, guarantees), resolve the destination page via the embedded QR code,
+                    and verify that all terms are consistent.
+                  </li>
+                  <li>
+                    <strong>Bait-and-Switch Detection:</strong> In failing test cases, verify whether the AI flags contradictions
+                    between promotional print promises and the live digital contract.
+                  </li>
+                  <li>
+                    <strong>Randomization Testing:</strong> Click <strong>"Re-roll Random Copy"</strong> in the top toolbar to generate
+                    new randomized claim values and rates to test your compliance model’s robustness against variable text.
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>Multimodal Cross-Inspection:</strong> Ingest the complete marketing advert via OCR or vision model,
-                  extract advertised claims (rates, APRs, fees, guarantees), resolve the destination page via the embedded QR code,
-                  and verify that all terms are consistent.
-                </li>
-                <li>
-                  <strong>Bait-and-Switch Detection:</strong> In failing test cases, verify whether the AI flags contradictions
-                  between promotional print promises and the live digital contract.
-                </li>
-                <li>
-                  <strong>Randomization Testing:</strong> Click <strong>"Re-roll Random Copy"</strong> in the top toolbar to generate
-                  new randomized claim values and rates to test your compliance model’s robustness against variable text.
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer />

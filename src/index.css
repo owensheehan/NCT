@@ -3519,7 +3519,7 @@ button, input, select {
   body {
     background: #ffffff !important;
   }
-  .navbar, .compliance-audit-bar, .advert-controls-bar, .compliance-guidance-section, .footer-wrapper, .qr-save-subbtn, .inspector-panel-container {
+  .navbar, .compliance-audit-bar, .advert-controls-bar, .compliance-guidance-section, .footer-wrapper, .qr-save-subbtn, .inspector-panel-container, .sheet-badge-row, .sheet-status-tag {
     display: none !important;
   }
   .advert-stage-section {

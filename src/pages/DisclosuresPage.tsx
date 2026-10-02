@@ -1,13 +1,19 @@
 import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { disclosuresVariants } from '../data/disclosuresData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { ShieldCheck, FileText, AlertTriangle, Scale } from 'lucide-react';
 
 export const DisclosuresPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(disclosuresVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -99,19 +105,21 @@ export const DisclosuresPage: React.FC = (): React.ReactNode => {
                     <h3 className="framework-name">{fw.name}</h3>
                     <p className="framework-rule">{fw.keyRule}</p>
 
-                    <div className="framework-violations">
-                      <strong className="text-rose-400 text-xs uppercase tracking-wider block mb-2">
-                        Common Marketing Pitfalls Flagged by AI:
-                      </strong>
-                      <ul>
-                        {fw.commonViolations.map((v, vIdx: number): React.ReactNode => (
-                          <li key={vIdx} className="violation-item">
-                            <AlertTriangle size={12} className="text-rose-400 mr-2 flex-shrink-0 inline" />
-                            <span>{v}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    {!clean && (
+                      <div className="framework-violations">
+                        <strong className="text-rose-400 text-xs uppercase tracking-wider block mb-2">
+                          Common Marketing Pitfalls Flagged by AI:
+                        </strong>
+                        <ul>
+                          {fw.commonViolations.map((v, vIdx: number): React.ReactNode => (
+                            <li key={vIdx} className="violation-item">
+                              <AlertTriangle size={12} className="text-rose-400 mr-2 flex-shrink-0 inline" />
+                              <span>{v}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

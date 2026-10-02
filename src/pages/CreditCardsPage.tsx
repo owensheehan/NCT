@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { creditCardVariants } from '../data/creditCardsData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
@@ -8,7 +9,12 @@ import { SchumerBox } from '../components/SchumerBox.tsx';
 import { CreditCard, AlertTriangle, ShieldCheck, ArrowRight, Gift } from 'lucide-react';
 
 export const CreditCardsPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(creditCardVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -131,33 +137,35 @@ export const CreditCardsPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Regulatory Guidance Box */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <ShieldCheck size={20} className="text-emerald-400" />
-                <h3>Credit CARD Act of 2009 Compliance Inspection Criteria:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <ShieldCheck size={20} className="text-emerald-400" />
+                  <h3>Credit CARD Act of 2009 Compliance Inspection Criteria:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>12 CFR § 1026.60 Tabular Disclosures:</strong> Solicitations and applications
+                    must provide a prominent Schumer Box table itemizing purchase APRs, balance transfer
+                    fees, penalty APR triggers, and late fees.
+                  </li>
+                  <li>
+                    <strong>Ability-to-Pay Rule (12 CFR § 1026.51):</strong> Issuers cannot guarantee
+                    approval or extend credit without underwriting the consumer's independent ability
+                    to make required payments.
+                  </li>
+                  <li>
+                    <strong>Clear Promotional Expiration:</strong> Solicitations offering 0% intro APR
+                    must state the exact duration (e.g., "15 billing cycles") and the post-introductory
+                    variable APR range that will take effect.
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>12 CFR § 1026.60 Tabular Disclosures:</strong> Solicitations and applications
-                  must provide a prominent Schumer Box table itemizing purchase APRs, balance transfer
-                  fees, penalty APR triggers, and late fees.
-                </li>
-                <li>
-                  <strong>Ability-to-Pay Rule (12 CFR § 1026.51):</strong> Issuers cannot guarantee
-                  approval or extend credit without underwriting the consumer's independent ability
-                  to make required payments.
-                </li>
-                <li>
-                  <strong>Clear Promotional Expiration:</strong> Solicitations offering 0% intro APR
-                  must state the exact duration (e.g., "15 billing cycles") and the post-introductory
-                  variable APR range that will take effect.
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer legalFootnote={content.cardActNotice} />

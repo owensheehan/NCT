@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { homeVariants } from '../data/homeData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
@@ -20,7 +20,12 @@ import {
 } from 'lucide-react';
 
 export const HomePage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(homeVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -159,54 +164,56 @@ export const HomePage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Regulatory Scope Explanation */}
-        <section className="reg-scope-section">
-          <div className="reg-scope-container">
-            <div className="reg-scope-card">
-              <div className="scope-header">
-                <SearchCheck size={24} className="text-emerald-400" />
-                <h3 className="scope-title">What the AI Compliance Inspector Should Test:</h3>
-              </div>
-              <div className="scope-grid">
-                <div className="scope-col">
-                  <h4>1. Truth in Lending (TILA / Reg Z)</h4>
-                  <p>
-                    Check whether trigger terms (monthly payment amounts, down payment percentages,
-                    loan period) are accompanied by clear and conspicuous Annual Percentage Rates
-                    (APR). Ensure APR is as prominent as nominal interest rate.
-                  </p>
+        {!clean && (
+          <section className="reg-scope-section">
+            <div className="reg-scope-container">
+              <div className="reg-scope-card">
+                <div className="scope-header">
+                  <SearchCheck size={24} className="text-emerald-400" />
+                  <h3 className="scope-title">What the AI Compliance Inspector Should Test:</h3>
                 </div>
-                <div className="scope-col">
-                  <h4>2. CARD Act & Consumer Credit</h4>
-                  <p>
-                    Verify presence of standardized Schumer Box table, clear expiration dates on 0%
-                    promotional introductory rates, and conspicuous penalty APR triggers.
-                  </p>
+                <div className="scope-grid">
+                  <div className="scope-col">
+                    <h4>1. Truth in Lending (TILA / Reg Z)</h4>
+                    <p>
+                      Check whether trigger terms (monthly payment amounts, down payment percentages,
+                      loan period) are accompanied by clear and conspicuous Annual Percentage Rates
+                      (APR). Ensure APR is as prominent as nominal interest rate.
+                    </p>
+                  </div>
+                  <div className="scope-col">
+                    <h4>2. CARD Act & Consumer Credit</h4>
+                    <p>
+                      Verify presence of standardized Schumer Box table, clear expiration dates on 0%
+                      promotional introductory rates, and conspicuous penalty APR triggers.
+                    </p>
+                  </div>
+                  <div className="scope-col">
+                    <h4>3. Truth in Savings (TISA / Reg DD)</h4>
+                    <p>
+                      Ensure Annual Percentage Yield (APY) is used, minimum balance to obtain APY is
+                      stated, fees reducing earnings are disclosed, and statutory $250k FDIC limits
+                      are respected.
+                    </p>
+                  </div>
+                  <div className="scope-col">
+                    <h4>4. Unfair & Deceptive Acts (CFPB UDAAP)</h4>
+                    <p>
+                      Detect promises of "100% Guaranteed Approval", unsubstantiated claims of "Zero
+                      Fees", deceptive introductory teaser traps, or calling investment products "risk-free".
+                    </p>
+                  </div>
                 </div>
-                <div className="scope-col">
-                  <h4>3. Truth in Savings (TISA / Reg DD)</h4>
-                  <p>
-                    Ensure Annual Percentage Yield (APY) is used, minimum balance to obtain APY is
-                    stated, fees reducing earnings are disclosed, and statutory $250k FDIC limits
-                    are respected.
-                  </p>
+                <div className="scope-footer-action">
+                  <Link to="/disclosures" className="scope-btn">
+                    <FileSpreadsheet size={16} className="inline mr-2" />
+                    <span>View Full Statutory Disclosures & Compliance Archive</span>
+                  </Link>
                 </div>
-                <div className="scope-col">
-                  <h4>4. Unfair & Deceptive Acts (CFPB UDAAP)</h4>
-                  <p>
-                    Detect promises of "100% Guaranteed Approval", unsubstantiated claims of "Zero
-                    Fees", deceptive introductory teaser traps, or calling investment products "risk-free".
-                  </p>
-                </div>
-              </div>
-              <div className="scope-footer-action">
-                <Link to="/disclosures" className="scope-btn">
-                  <FileSpreadsheet size={16} className="inline mr-2" />
-                  <span>View Full Statutory Disclosures & Compliance Archive</span>
-                </Link>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer

@@ -39,7 +39,9 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
     if (window.location.hostname.includes('github.io')) {
       return 'https://owensheehan.github.io/NCT/';
     }
-    return `${window.location.origin}${window.location.pathname}`;
+    const origin = window.location.origin;
+    const pathname = window.location.pathname.startsWith('/NCT') ? '/NCT/' : '/';
+    return `${origin}${pathname}`;
   }, []);
 
   const [baseUrl, setBaseUrl] = useState<string>(defaultBaseUrl);
@@ -190,7 +192,8 @@ export const TestGeneratorPage: React.FC = (): React.ReactNode => {
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>): void => setSelectedVertical(e.target.value)}
                     className="filter-select"
                   >
-                    <option value="All">All Verticals (15 Tests)</option>
+                    <option value="All">All Verticals ({testCases.length} Tests)</option>
+                    <option value="Linked Files & Downloads">Linked Files & Downloads (LLM-4188)</option>
                     <option value="Mortgages">Mortgages</option>
                     <option value="Credit Cards">Credit Cards</option>
                     <option value="Savings & Deposits">Savings & Deposits</option>

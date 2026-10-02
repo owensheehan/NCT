@@ -1,13 +1,19 @@
 import React, { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { savingsVariants } from '../data/savingsData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
 import { PiggyBank, Shield, ArrowRight, Calculator } from 'lucide-react';
 
 export const SavingsPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(savingsVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -188,33 +194,35 @@ export const SavingsPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Regulatory Guidance */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <Shield size={20} className="text-emerald-400" />
-                <h3>Truth in Savings Act (TISA / Reg DD) Compliance Criteria:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <Shield size={20} className="text-emerald-400" />
+                  <h3>Truth in Savings Act (TISA / Reg DD) Compliance Criteria:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>12 CFR § 1030.8(b) APY Designation:</strong> Rates of return must be stated
+                    as an Annual Percentage Yield (using the acronym "APY" and spelling out the full
+                    phrase). Stating "simple rate" without the APY is a statutory violation.
+                  </li>
+                  <li>
+                    <strong>12 CFR § 1030.8(c)(3) Fee Disclosures:</strong> If fees are imposed in
+                    connection with the account, advertising must explicitly warn that "fees could reduce
+                    earnings on the account."
+                  </li>
+                  <li>
+                    <strong>FDIC Insurance Accuracy (12 CFR Part 328):</strong> Institutions are strictly
+                    prohibited from misrepresenting deposit insurance boundaries or claiming government
+                    backing on balances exceeding statutory $250,000 limits without disclosing sweep networks.
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>12 CFR § 1030.8(b) APY Designation:</strong> Rates of return must be stated
-                  as an Annual Percentage Yield (using the acronym "APY" and spelling out the full
-                  phrase). Stating "simple rate" without the APY is a statutory violation.
-                </li>
-                <li>
-                  <strong>12 CFR § 1030.8(c)(3) Fee Disclosures:</strong> If fees are imposed in
-                  connection with the account, advertising must explicitly warn that "fees could reduce
-                  earnings on the account."
-                </li>
-                <li>
-                  <strong>FDIC Insurance Accuracy (12 CFR Part 328):</strong> Institutions are strictly
-                  prohibited from misrepresenting deposit insurance boundaries or claiming government
-                  backing on balances exceeding statutory $250,000 limits without disclosing sweep networks.
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer

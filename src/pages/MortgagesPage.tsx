@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { mortgageVariants } from '../data/mortgagesData.ts';
-import { getVisitSession, getActiveVariant } from '../utils/dynamicContent.ts';
+import { getVisitSession, getActiveVariant, isCleanMode } from '../utils/dynamicContent.ts';
 import { ComplianceAuditBar } from '../components/ComplianceAuditBar.tsx';
 import { Navbar } from '../components/Navbar.tsx';
 import { Footer } from '../components/Footer.tsx';
@@ -8,7 +9,12 @@ import { RateCalculator } from '../components/RateCalculator.tsx';
 import { Home, Percent, ShieldCheck, AlertCircle, ArrowRight } from 'lucide-react';
 
 export const MortgagesPage: React.FC = (): React.ReactNode => {
-  const session = useMemo(() => getVisitSession(), []);
+  const location = useLocation();
+  const session = useMemo(
+    () => getVisitSession(),
+    [location.pathname, location.search, location.hash]
+  );
+  const clean = isCleanMode();
   const activeVariant = useMemo(
     () => getActiveVariant(mortgageVariants, session.activeVariantId),
     [session.activeVariantId]
@@ -145,35 +151,37 @@ export const MortgagesPage: React.FC = (): React.ReactNode => {
         </section>
 
         {/* Regulatory Examination Guidance */}
-        <section className="compliance-guidance-section">
-          <div className="guidance-container">
-            <div className="guidance-box">
-              <div className="guidance-header">
-                <Percent size={20} className="text-cyan-400" />
-                <h3>Truth in Lending Act (TILA / Reg Z) Compliance Inspection Checklist:</h3>
+        {!clean && (
+          <section className="compliance-guidance-section">
+            <div className="guidance-container">
+              <div className="guidance-box">
+                <div className="guidance-header">
+                  <Percent size={20} className="text-cyan-400" />
+                  <h3>Truth in Lending Act (TILA / Reg Z) Compliance Inspection Checklist:</h3>
+                </div>
+                <ul className="guidance-list">
+                  <li>
+                    <strong>12 CFR § 1026.24(d) Trigger Terms:</strong> Any mention of monthly payment
+                    (e.g., "${content.offers[0]?.monthlyPaymentEstimate.toFixed(0)}/mo") or down payment
+                    (e.g., "{content.offers[0]?.downPaymentPercent}% down") strictly triggers the requirement
+                    to state the terms of repayment and the APR.
+                  </li>
+                  <li>
+                    <strong>APR Conspicuousness:</strong> The Annual Percentage Rate must be stated at least
+                    as conspicuously as the simple interest rate (no tiny font disparities or buried footnotes).
+                  </li>
+                  <li>
+                    <strong>Equal Housing Opportunity:</strong> Depository lenders must display the Equal
+                    Housing Lender logo and statement. Current state:{' '}
+                    <span className={content.equalHousingLogoVisible ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
+                      {content.equalHousingLogoVisible ? 'Displayed' : 'Omitted (Non-Compliant)'}
+                    </span>.
+                  </li>
+                </ul>
               </div>
-              <ul className="guidance-list">
-                <li>
-                  <strong>12 CFR § 1026.24(d) Trigger Terms:</strong> Any mention of monthly payment
-                  (e.g., "${content.offers[0]?.monthlyPaymentEstimate.toFixed(0)}/mo") or down payment
-                  (e.g., "{content.offers[0]?.downPaymentPercent}% down") strictly triggers the requirement
-                  to state the terms of repayment and the APR.
-                </li>
-                <li>
-                  <strong>APR Conspicuousness:</strong> The Annual Percentage Rate must be stated at least
-                  as conspicuously as the simple interest rate (no tiny font disparities or buried footnotes).
-                </li>
-                <li>
-                  <strong>Equal Housing Opportunity:</strong> Depository lenders must display the Equal
-                  Housing Lender logo and statement. Current state:{' '}
-                  <span className={content.equalHousingLogoVisible ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
-                    {content.equalHousingLogoVisible ? 'Displayed' : 'Omitted (Non-Compliant)'}
-                  </span>.
-                </li>
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer
