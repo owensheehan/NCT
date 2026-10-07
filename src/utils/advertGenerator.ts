@@ -27,7 +27,11 @@ interface RawLinkInput {
   url: string;
   description?: string;
   badge?: string;
+  category?: string;
+  status?: 'Captured' | 'Failed';
 }
+
+type RawAdvertDocumentData = Omit<AdvertDocumentData, 'links'>;
 
 /**
  * Helper to generate scannable QR codes for each additional advert link.
@@ -52,16 +56,16 @@ const createAdvertLinks = async (rawLinks: RawLinkInput[]): Promise<AdvertLink[]
 };
 
 /**
- * Generates a complete marketing advertisement document data object for a given test case.
+ * Generates the raw marketing advertisement document data object for a given test case.
  * In PASS cases: perfectly aligned summary of the linked webpage with full statutory disclosures.
  * In FAIL cases: realistic advertisement that deliberately strays from the linked webpage (wrong APRs,
  * omitted trigger terms, deceptive guarantees, contradictory payments) with randomized values.
  */
-export const generateAdvertDocument = async (
+const generateAdvertDocumentRaw = async (
   tc: TestCaseDefinition,
   baseUrl: string,
   randomSeed: number = Date.now()
-): Promise<AdvertDocumentData> => {
+): Promise<RawAdvertDocumentData> => {
   const safeBase =
     baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
       ? baseUrl
@@ -1495,6 +1499,290 @@ export const generateAdvertDocument = async (
 };
 
 /**
+ * Generates an array of AdvertLinks with precomputed scannable QR codes for each test case.
+ * Guaranteed to provide 4 to 6 links per advert, avoiding localhost.
+ */
+export const getAdvertLinksForTestCase = async (
+  tc: TestCaseDefinition,
+  baseUrl: string
+): Promise<AdvertLink[]> => {
+  const safeBase =
+    baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      ? baseUrl
+      : 'https://owensheehan.github.io/NCT/';
+  const sanitizedBase = safeBase.endsWith('/') ? safeBase : `${safeBase}/`;
+  const landingPageUrl = `${sanitizedBase}${tc.subpath}`;
+
+  let rawLinks: RawLinkInput[] = [];
+
+  if (tc.id === 'TC-FILE-B15-PASS') {
+    rawLinks = [
+      {
+        label: '1. Primary Multi-Document Regulatory Portal (HTML)',
+        url: `${sanitizedBase}files/llm-4188/multi-link.html`,
+        description: 'Direct interactive regulatory index page containing all statutory document links.',
+        badge: 'Online Portal',
+        category: 'Portal',
+        status: 'Captured',
+      },
+      {
+        label: '2. Truth in Lending Act (TILA) Rate & Fee Schedule (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+        description: 'Official 3-page statutory rate schedule, APR calculation formulas, and fee schedule.',
+        badge: 'PDF Document',
+        category: 'Statutory Disclosure',
+        status: 'Captured',
+      },
+      {
+        label: '3. Master Borrowing & Account Terms Agreement (.docx)',
+        url: `${sanitizedBase}files/llm-4188/terms.docx`,
+        description: 'Complete contractual terms, borrower rights, and arbitration provisions.',
+        badge: 'Word Document',
+        category: 'Contract Terms',
+        status: 'Captured',
+      },
+      {
+        label: '4. Promotional Rate Circular Artwork (PNG Image)',
+        url: `${sanitizedBase}files/llm-4188/ad-image.png`,
+        description: 'High-resolution promotional banner graphic detailing introductory rate caps.',
+        badge: 'Banner Image',
+        category: 'Marketing Artwork',
+        status: 'Captured',
+      },
+      {
+        label: '5. Comprehensive Master Fee Schedule (>10MB PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-large.pdf`,
+        description: 'Complete itemized schedule of all 42 account service fee codes.',
+        badge: 'Oversized PDF',
+        category: 'Master Fee Schedule',
+        status: 'Captured',
+      },
+      {
+        label: '6. Consumer Financial Protection Bureau (CFPB) Reg Z Rules',
+        url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+        description: 'Official federal statutory requirements for open and closed-end consumer credit.',
+        badge: 'Federal Authority',
+        category: 'Federal Regulatory Agency',
+        status: 'Captured',
+      },
+    ];
+  } else if (tc.id === 'TC-FILE-B16-PASS') {
+    rawLinks = [
+      {
+        label: '1. Multi-Frame Regulatory Parent Portal (HTML)',
+        url: `${sanitizedBase}files/llm-4188/multi-iframe.html`,
+        description: 'HTML parent document embedding multiple isolated document iframes.',
+        badge: 'Parent Portal',
+        category: 'Portal',
+        status: 'Captured',
+      },
+      {
+        label: '2. Frame 1: Statutory Rate Disclosure Schedule (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+        description: 'Embedded iframe document containing official Truth in Lending Act rate disclosures.',
+        badge: 'Embedded Frame 1',
+        category: 'Statutory Disclosure',
+        status: 'Captured',
+      },
+      {
+        label: '3. Frame 2: Display Advert Marketing Artwork (HTML)',
+        url: `${sanitizedBase}files/llm-4188/image-only.html`,
+        description: 'Embedded iframe document displaying marketing banner with promotional claims.',
+        badge: 'Embedded Frame 2',
+        category: 'Marketing Artwork',
+        status: 'Captured',
+      },
+      {
+        label: '4. Consumer Financial Protection Bureau (CFPB) Reg Z Rules',
+        url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+        description: 'Official federal statutory requirements for open and closed-end consumer credit.',
+        badge: 'Federal Authority',
+        category: 'Federal Regulatory Agency',
+        status: 'Captured',
+      },
+    ];
+  } else if (tc.id === 'TC-FILE-B17-PASS') {
+    rawLinks = [
+      {
+        label: '1. Multi-Link Interactive Disclosure PDF Document',
+        url: `${sanitizedBase}files/llm-4188/multi-link.pdf`,
+        description: 'Master PDF document embedding multiple interactive /URI hyperlink annotations.',
+        badge: 'Interactive PDF',
+        category: 'Master Document',
+        status: 'Captured',
+      },
+      {
+        label: '2. CFPB Truth in Lending Regulatory Authority',
+        url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+        description: 'Federal statutory compliance standards for mortgage credit advertisements.',
+        badge: 'PDF /URI Action',
+        category: 'Federal Authority',
+        status: 'Captured',
+      },
+      {
+        label: '3. FDIC Deposit Insurance Coverage Standards',
+        url: 'https://www.fdic.gov/resources/deposit-insurance/',
+        description: 'Official federal deposit insurance limits and coverage rules.',
+        badge: 'PDF /URI Action',
+        category: 'Federal Insurance',
+        status: 'Captured',
+      },
+      {
+        label: '4. NMLS Consumer Access Directory (#491022)',
+        url: 'https://www.nmlsconsumeraccess.org',
+        description: 'Nationwide Mortgage Licensing System public registry record for #491022.',
+        badge: 'PDF /URI Action',
+        category: 'Regulatory License',
+        status: 'Captured',
+      },
+      {
+        label: '5. Supplementary Rate Disclosure Schedule (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+        description: 'Direct PDF attachment containing itemized finance charges and APR reset rules.',
+        badge: 'Attached PDF',
+        category: 'Statutory Disclosure',
+        status: 'Captured',
+      },
+    ];
+  } else if (tc.id === 'TC-FILE-MULTI-01-MIXED') {
+    rawLinks = [
+      {
+        label: '1. Primary Digital Home Financing Portal (Webpage)',
+        url: `${sanitizedBase}mortgages`,
+        description: 'Active digital mortgage application and product catalog (Passing Webpage).',
+        badge: 'Captured (PASS)',
+        category: 'Digital Application',
+        status: 'Captured',
+      },
+      {
+        label: '2. Statutory Rate & Fee Disclosure Schedule (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+        description: 'Official 3-page selectable text TILA disclosure (Passing PDF).',
+        badge: 'Captured (PASS)',
+        category: 'Statutory Disclosure',
+        status: 'Captured',
+      },
+      {
+        label: '3. Unpopulated Blank Disclosure Addendum (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-blank.pdf`,
+        description: 'Blank PDF containing no readable text (Failing PDF Guardrail).',
+        badge: 'Unverifiable (FAIL)',
+        category: 'Failing Guardrail',
+        status: 'Failed',
+      },
+      {
+        label: '4. Master Borrowing Agreement Document (.docx)',
+        url: `${sanitizedBase}files/llm-4188/terms.docx`,
+        description: 'Microsoft Word OpenXML document (Failing Document Guardrail).',
+        badge: 'Unverifiable (FAIL)',
+        category: 'Failing Guardrail',
+        status: 'Failed',
+      },
+      {
+        label: '5. Binary Account Fee Schedule Archive (.bin)',
+        url: `${sanitizedBase}files/llm-4188/not-a-pdf.bin`,
+        description: 'Zip archive with .bin extension (Failing Unsupported Binary Guardrail).',
+        badge: 'Unverifiable (FAIL)',
+        category: 'Failing Guardrail',
+        status: 'Failed',
+      },
+      {
+        label: '6. CFPB Truth in Lending Regulation Z Official Rules',
+        url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+        description: 'Federal statutory requirements governing consumer mortgage advertising.',
+        badge: 'Captured (PASS)',
+        category: 'Federal Authority',
+        status: 'Captured',
+      },
+    ];
+  } else {
+    // Standard test cases across all financial verticals
+    rawLinks = [
+      {
+        label: '1. Primary Online Application & Live Rates Portal',
+        url: landingPageUrl,
+        description: 'Secure digital banking portal to review live terms and complete application.',
+        badge: 'Digital Portal',
+        category: 'Application Portal',
+        status: 'Captured',
+      },
+      {
+        label: '2. Truth in Lending Act (TILA) Rate & Fee Schedule (PDF)',
+        url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+        description: 'Official 3-page statutory note rates, APR calculation formula, and fee schedule.',
+        badge: 'PDF Document',
+        category: 'Statutory Disclosure',
+        status: 'Captured',
+      },
+      {
+        label: '3. Master Borrowing & Account Terms Agreement (.docx)',
+        url: `${sanitizedBase}files/llm-4188/terms.docx`,
+        description: 'Contractual terms, cardholder/borrower agreements, and dispute procedures.',
+        badge: 'Contract Terms',
+        category: 'Legal Terms',
+        status: 'Captured',
+      },
+      {
+        label: '4. Consumer Financial Protection Bureau (CFPB) Standards',
+        url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+        description: 'Official federal statutory requirements for credit and deposit advertising.',
+        badge: 'Federal Portal',
+        category: 'Federal Authority',
+        status: 'Captured',
+      },
+      {
+        label: '5. NMLS Consumer Access Public Registry Record',
+        url: 'https://www.nmlsconsumeraccess.org',
+        description: 'Public nationwide mortgage and depository licensing database (#491022).',
+        badge: 'NMLS Registry',
+        category: 'Regulatory License',
+        status: 'Captured',
+      },
+    ];
+  }
+
+  const results: AdvertLink[] = [];
+  for (const item of rawLinks) {
+    const qrDataUrl = await QRCode.toDataURL(item.url, {
+      width: 140,
+      margin: 1,
+      color: {
+        dark: '#0a0f1d',
+        light: '#ffffff',
+      },
+    });
+    results.push({
+      ...item,
+      qrDataUrl,
+    });
+  }
+
+  return results;
+};
+
+/**
+ * Generates a complete marketing advertisement document data object for a given test case.
+ * Guaranteed to contain multiple links and corresponding scannable QR codes for every test case.
+ */
+export const generateAdvertDocument = async (
+  tc: TestCaseDefinition,
+  baseUrl: string,
+  randomSeed: number = Date.now()
+): Promise<AdvertDocumentData> => {
+  const safeBase =
+    baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      ? baseUrl
+      : 'https://owensheehan.github.io/NCT/';
+  const baseDoc = await generateAdvertDocumentRaw(tc, safeBase, randomSeed);
+  const links = await getAdvertLinksForTestCase(tc, safeBase);
+  return {
+    ...baseDoc,
+    links,
+    additionalLinks: links,
+  };
+};
+
+/**
  * Builds all advert documents for the entire standard test suite.
  */
 export const buildAllAdvertDocuments = async (
@@ -1869,23 +2157,25 @@ export const printAdvertBookletHtml = (
       </section>
 
       ${
-        ad.additionalLinks && ad.additionalLinks.length > 0
+        ad.links && ad.links.length > 0
           ? `
-        <section style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+        <section style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
           <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
-            Official Statutory & Documentation Links (${ad.additionalLinks.length} Disclosed URLs):
+            Official Statutory & Documentation Links (${ad.links.length} Disclosed URLs in Advert):
           </div>
           <div style="display: flex; flex-direction: column; gap: 8px;">
-            ${ad.additionalLinks
+            ${ad.links
               .map(
-                (l): string => `
+                (l, idx): string => `
               <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; gap: 12px;">
                 <div style="flex: 1; min-width: 0;">
-                  <div style="font-size: 12px; font-weight: 700; color: #0f172a;">${l.label} ${l.badge ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">${l.badge}</span>` : ''}</div>
+                  <div style="font-size: 12px; font-weight: 700; color: #0f172a;">
+                    [LINK ${idx + 1}] ${l.label} ${l.badge ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">${l.badge}</span>` : ''}
+                  </div>
                   ${l.description ? `<div style="font-size: 11px; color: #64748b; margin-top: 2px;">${l.description}</div>` : ''}
                   <div style="font-family: monospace; font-size: 10px; color: #0284c7; word-break: break-all; margin-top: 3px;">${l.url}</div>
                 </div>
-                ${l.qrDataUrl ? `<img src="${l.qrDataUrl}" alt="QR" style="width: 48px; height: 48px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px; background: #fff;">` : ''}
+                ${l.qrDataUrl ? `<img src="${l.qrDataUrl}" alt="QR" style="width: 50px; height: 50px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px; background: #fff;">` : ''}
               </div>
             `
               )
@@ -1902,7 +2192,18 @@ export const printAdvertBookletHtml = (
 
       <footer class="ad-fine-print">
         <p><strong>Regulatory Disclosures:</strong> ${ad.legalFinePrint}</p>
-        <p style="margin-top: 6px; font-family: monospace;">Apex Horizon Bancorp N.A. • NMLS ID #${ad.nmlsId} • Member FDIC • Equal Housing Lender</p>
+        <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px;">
+          <div style="font-weight: 800; font-size: 10px; color: #334155; margin-bottom: 6px; text-transform: uppercase;">
+            STATUTORY DOCUMENT LOCATORS & MULTIPLE DIRECT URLS (${ad.links.length} Active URLs):
+          </div>
+          ${ad.links
+            .map(
+              (l, i): string =>
+                `<div style="font-family: monospace; font-size: 9px; color: #475569; margin-bottom: 2px;">[${i + 1}] ${l.label}: ${l.url}</div>`
+            )
+            .join('')}
+        </div>
+        <p style="margin-top: 8px; font-family: monospace;">Apex Horizon Bancorp N.A. • NMLS ID #${ad.nmlsId} • Member FDIC • Equal Housing Lender</p>
       </footer>
     </article>
   `

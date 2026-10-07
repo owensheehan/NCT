@@ -51,8 +51,10 @@ export interface AdvertLink {
   label: string;
   url: string;
   description?: string;
-  qrDataUrl?: string;
+  qrDataUrl: string;
   badge?: string;
+  category?: string;
+  status?: 'Captured' | 'Failed';
 }
 
 export interface AdvertDocumentData {
@@ -70,6 +72,7 @@ export interface AdvertDocumentData {
   secondaryMetric: string;
   landingPageUrl: string;
   qrDataUrl: string;
+  links: AdvertLink[];
   expectedOutcome: 'PASS' | 'FAIL';
   alignmentStatus: 'ALIGNED_WITH_LANDING_PAGE' | 'CONFLICTING_RATES_OR_TERMS' | 'DECEPTIVE_ADVERT_CLAIMS';
   discrepancies: string[];

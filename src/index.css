@@ -3550,6 +3550,144 @@ button, input, select {
   margin-top: 2px;
 }
 
+.qr-btn-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.multi-links-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.copy-all-mini-btn {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0369a1;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+.copy-all-mini-btn:hover {
+  background: #f0fdf4;
+  border-color: #10b981;
+  color: #047857;
+}
+
+.multi-link-idx-tag {
+  font-size: 0.625rem;
+  font-weight: 800;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+  font-family: monospace;
+}
+
+.multi-link-status-pill {
+  font-size: 0.625rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.status-pill-pass {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-pill-fail {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.ctrl-btn-copy-links {
+  background: #0369a1;
+  color: #ffffff;
+  border: 1px solid #0284c7;
+}
+
+.ctrl-btn-copy-links:hover {
+  background: #0284c7;
+}
+
+/* Statutory Multi-URL Directory in Fine Print */
+.sheet-statutory-links-index {
+  margin: 12px 0;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #0284c7;
+  border-radius: 6px;
+}
+
+.statutory-links-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.statutory-links-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.statutory-link-item {
+  font-size: 0.6875rem;
+  color: #475569;
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.statutory-link-num {
+  font-family: monospace;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+.statutory-link-title {
+  color: #0f172a;
+}
+
+.statutory-link-href {
+  color: #0284c7;
+  background: #f1f5f9;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.statutory-link-tag {
+  color: #64748b;
+  font-size: 0.625rem;
+}
+
+.statutory-link-status {
+  font-weight: 700;
+  font-size: 0.625rem;
+}
+
 /* Representative Example Box */
 .sheet-representative-box {
   background: #f8fafc;

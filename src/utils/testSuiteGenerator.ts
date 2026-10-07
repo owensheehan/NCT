@@ -475,6 +475,24 @@ export const STANDARD_TEST_CASES: TestCaseDefinition[] = [
       'PDF Link Annotation Extraction: Resolves interactive URI links (CFPB Reg Z, FDIC, NMLS, PDF attachments).',
     ],
   },
+  {
+    id: 'TC-FILE-MULTI-01-MIXED',
+    name: 'Multi-URL Review: Mixed Passing & Failing Linked Files (LLM-4188)',
+    vertical: 'Linked Files & Downloads',
+    subpath: 'files/llm-4188/multi-link.html',
+    expectedOutcome: 'PASS',
+    variantId: 'compliant',
+    regulatoryFramework: 'Multi-URL Concurrent Ingestion & Partial Failure Resilience',
+    description: 'Ad containing multiple attached URLs (passing rate PDF + passing landing page + failing blank PDF + failing binary + failing docx). Verifies review runs with mixed results and reports failing files as unverifiable.',
+    fileExercise: 'MULTI',
+    captureExpectedBadge: 'Captured',
+    captureExpectedMessage: 'Passing files captured (PDF text & HTML); failing files reported as unverifiable.',
+    expectedViolations: [
+      'Multi-URL Ingestion: 2 URLs Captured (disclosure-text.pdf, mortgages landing page)',
+      'Multi-URL Failure Guardrails: 3 URLs Failed (blank.pdf, not-a-pdf.bin, terms.docx)',
+      'AI Review Resilience: Review proceeds normally using captured valid evidence without crashing.',
+    ],
+  },
 ];
 
 /**

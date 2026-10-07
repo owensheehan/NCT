@@ -27,6 +27,7 @@ import {
   Eye,
   EyeOff,
   Link2,
+  Copy,
 } from 'lucide-react';
 
 export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
@@ -63,6 +64,18 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
   const [loading, setLoading] = useState<boolean>(true);
   const [randomSeed, setRandomSeed] = useState<number>(() => Date.now());
   const [showInspectorNotes, setShowInspectorNotes] = useState<boolean>(true);
+  const [copiedAllUrls, setCopiedAllUrls] = useState<boolean>(false);
+
+  const handleCopyAllUrls = (): void => {
+    if (!advertDoc || !advertDoc.links) return;
+    const text = advertDoc.links
+      .map((l: AdvertLink, idx: number): string => `[Link ${idx + 1}] ${l.label}: ${l.url}`)
+      .join('\n');
+    navigator.clipboard.writeText(text).then((): void => {
+      setCopiedAllUrls(true);
+      setTimeout((): void => setCopiedAllUrls(false), 2500);
+    });
+  };
 
   // Generate advert document data
   const loadAdvert = useCallback((): void => {
@@ -226,6 +239,18 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
 
                 {advertDoc && (
                   <>
+                    {advertDoc.links && advertDoc.links.length > 0 && (
+                      <button
+                        type="button"
+                        className="ctrl-btn ctrl-btn-copy-links"
+                        onClick={handleCopyAllUrls}
+                        title={`Copy all ${advertDoc.links.length} URLs in this advert to clipboard`}
+                      >
+                        {copiedAllUrls ? <CheckCircle2 size={14} className="text-emerald-400" /> : <Copy size={14} />}
+                        <span>{copiedAllUrls ? `Copied ${advertDoc.links.length} URLs!` : `Copy All ${advertDoc.links.length} URLs`}</span>
+                      </button>
+                    )}
+
                     <button
                       type="button"
                       className="ctrl-btn ctrl-btn-print"
@@ -377,73 +402,110 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                     {/* Right: Scannable QR Code Response Mechanism */}
                     <div className="sheet-qr-col">
                       <div className="advert-qr-box">
-                        <div className="qr-badge">SCAN TO APPLY OR VIEW LIVE RATES</div>
+                        <div className="qr-badge">PRIMARY DIGITAL ACCESS ({advertDoc.links.length} ACTIVE URLS)</div>
                         <img
                           src={advertDoc.qrDataUrl}
                           alt={`QR Code to ${advertDoc.landingPageUrl}`}
                           className="advert-qr-image"
                         />
                         <p className="qr-cta-instructions">
-                          Point your smartphone camera at the QR code to verify your rate, view complete statutory
-                          disclosures, and complete your application online.
+                          Scan with your camera to access <strong>Link 1 (Primary Application Portal)</strong>. Full statutory rate schedules, contractual terms, and regulatory filings are directly referenced below.
                         </p>
                         <div className="qr-url-display">{advertDoc.landingPageUrl}</div>
-                        <button
-                          type="button"
-                          className="qr-save-subbtn"
-                          onClick={handleDownloadQrOnly}
-                          title="Save high-resolution QR image for test runners"
-                        >
-                          <Download size={11} className="mr-1 inline" />
-                          <span>Save QR Image</span>
-                        </button>
+                        <div className="qr-btn-row">
+                          <button
+                            type="button"
+                            className="qr-save-subbtn"
+                            onClick={handleDownloadQrOnly}
+                            title="Save high-resolution QR image for test runners"
+                          >
+                            <Download size={11} className="mr-1 inline" />
+                            <span>Save QR Image</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="qr-save-subbtn"
+                            onClick={handleCopyAllUrls}
+                            title="Copy all URLs in this advert to clipboard"
+                          >
+                            <Copy size={11} className="mr-1 inline" />
+                            <span>{copiedAllUrls ? 'Copied All!' : 'Copy All URLs'}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </section>
 
                   {/* Multi-URL Regulatory & Document Disclosure Links Section */}
-                  {advertDoc.additionalLinks && advertDoc.additionalLinks.length > 0 && (
-                    <section className="sheet-multi-links-section">
+                  {advertDoc.links && advertDoc.links.length > 0 && (
+                    <section className="sheet-multi-links-section" id="sheet-multi-links">
                       <div className="multi-links-header">
                         <div className="multi-links-title-row">
                           <Link2 size={16} className="text-sky-600 inline mr-2" />
                           <h3 className="section-heading mb-0">Official Statutory & Documentation Links</h3>
                         </div>
-                        <span className="multi-links-count">
-                          {advertDoc.additionalLinks.length} Disclosed URLs
-                        </span>
+                        <div className="multi-links-actions-row">
+                          <span className="multi-links-count">
+                            {advertDoc.links.length} Disclosed URLs in Advert
+                          </span>
+                          <button
+                            type="button"
+                            className="copy-all-mini-btn"
+                            onClick={handleCopyAllUrls}
+                            title="Copy all URLs to clipboard"
+                          >
+                            {copiedAllUrls ? (
+                              <CheckCircle2 size={11} className="text-emerald-500 inline mr-1" />
+                            ) : (
+                              <Copy size={11} className="inline mr-1" />
+                            )}
+                            <span>{copiedAllUrls ? 'Copied All URLs!' : 'Copy All URLs'}</span>
+                          </button>
+                        </div>
                       </div>
                       <p className="multi-links-lead">
-                        The statutory disclosures, regulatory frameworks, and supplemental agreement schedules below are formally incorporated into this promotional circular:
+                        The statutory disclosures, regulatory frameworks, and supplemental agreement schedules below are formally incorporated into this promotional circular. AI vision models and OCR scanners extract and cross-verify each URL:
                       </p>
                       <div className="sheet-multi-links-grid">
-                        {advertDoc.additionalLinks.map((item: AdvertLink, idx: number): React.ReactNode => (
+                        {advertDoc.links.map((item: AdvertLink, idx: number): React.ReactNode => (
                           <div key={idx} className="multi-link-card">
                             <div className="multi-link-main">
                               <div className="multi-link-top">
+                                <span className="multi-link-idx-tag">LINK {idx + 1}</span>
                                 <span className="multi-link-label">{item.label}</span>
                                 {item.badge && <span className="multi-link-badge">{item.badge}</span>}
+                                {item.status && (
+                                  <span
+                                    className={`multi-link-status-pill ${
+                                      item.status === 'Captured' ? 'status-pill-pass' : 'status-pill-fail'
+                                    }`}
+                                  >
+                                    {item.status}
+                                  </span>
+                                )}
                               </div>
                               {item.description && <p className="multi-link-desc">{item.description}</p>}
-                              <a
-                                href={item.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="multi-link-url"
-                                title={`Open ${item.label}`}
-                              >
-                                <ExternalLink size={12} className="inline mr-1 flex-shrink-0" />
-                                <span>{item.url}</span>
-                              </a>
+                              <div className="multi-link-url-container">
+                                <a
+                                  href={item.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="multi-link-url"
+                                  title={`Open ${item.label}`}
+                                >
+                                  <ExternalLink size={12} className="inline mr-1 flex-shrink-0" />
+                                  <span>{item.url}</span>
+                                </a>
+                              </div>
                             </div>
                             {item.qrDataUrl && (
-                              <div className="multi-link-qr-box" title={`Scannable QR code for ${item.label}`}>
+                              <div className="multi-link-qr-box" title={`Scannable QR code for [Link ${idx + 1}] ${item.label}`}>
                                 <img
                                   src={item.qrDataUrl}
                                   alt={`QR for ${item.label}`}
                                   className="multi-link-qr-img"
                                 />
-                                <span className="multi-link-qr-tag">Scan Link</span>
+                                <span className="multi-link-qr-tag">Scan Link {idx + 1}</span>
                               </div>
                             )}
                           </div>
@@ -465,6 +527,36 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                   <footer className="sheet-footer">
                     <div className="fine-print-title">STATUTORY DISCLOSURES & REGULATORY NOTICES:</div>
                     <p className="fine-print-body">{advertDoc.legalFinePrint}</p>
+
+                    {/* Explicit Plaintext URL Directory for Multimodal OCR and Vision Ingestion */}
+                    {advertDoc.links && advertDoc.links.length > 0 && (
+                      <div className="sheet-statutory-links-index">
+                        <div className="statutory-links-title">
+                          STATUTORY DOCUMENT LOCATORS & MULTIPLE DIRECT URLS ({advertDoc.links.length} ACTIVE URLS):
+                        </div>
+                        <ol className="statutory-links-list">
+                          {advertDoc.links.map((link: AdvertLink, idx: number): React.ReactNode => (
+                            <li key={idx} className="statutory-link-item">
+                              <span className="statutory-link-num">[{idx + 1}]</span>{' '}
+                              <strong className="statutory-link-title">{link.label}:</strong>{' '}
+                              <span className="statutory-link-href font-mono">{link.url}</span>
+                              {link.badge && <span className="statutory-link-tag"> — {link.badge}</span>}
+                              {link.status && (
+                                <span
+                                  className={`statutory-link-status ${
+                                    link.status === 'Captured' ? 'text-emerald-700' : 'text-rose-700'
+                                  }`}
+                                >
+                                  {' '}
+                                  [Expected: {link.status}]
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
                     <div className="sheet-footer-bottom">
                       <span>
                         Apex Horizon Bancorp N.A. • NMLS Unique Identifier #{advertDoc.nmlsId} •{' '}
