@@ -25,29 +25,37 @@ def escape_pdf_text(text: str) -> str:
     )
     return cleaned
 
-def create_text_pdf(pages_text: list[list[str]], output_path: str, extra_bytes: bytes = b''):
+def create_text_pdf(pages_text: list[list[str]], output_path: str, extra_bytes: bytes = b'', link_annotations: list[dict] = None):
     """
-    Creates a valid, selectable text PDF with standard fonts and xref table.
+    Creates a valid, selectable text PDF with standard fonts, optional URI link annotations, and xref table.
     """
     objects = []
     
     # obj 1: Catalog
     # obj 2: Pages
     # obj 3: Font
-    # Pages will start at obj 4
-    # Contents will follow each Page
-    
     font_obj_num = 3
     
-    # We will build pages and contents
+    link_annotations = link_annotations or []
+    
+    # Pre-calculate object numbers
     page_obj_nums = []
     content_obj_nums = []
+    page_annot_map = {} # page_idx -> list of (annot_obj_num, dict)
     
     current_obj = 4
-    for _ in pages_text:
+    for p_idx in range(len(pages_text)):
         page_obj_nums.append(current_obj)
         content_obj_nums.append(current_obj + 1)
         current_obj += 2
+        
+        # Check annotations for this page
+        p_annots = [a for a in link_annotations if a.get('page', 0) == p_idx]
+        annot_obj_list = []
+        for a in p_annots:
+            annot_obj_list.append((current_obj, a))
+            current_obj += 1
+        page_annot_map[p_idx] = annot_obj_list
         
     extra_obj_num = None
     if extra_bytes:
@@ -64,13 +72,19 @@ def create_text_pdf(pages_text: list[list[str]], output_path: str, extra_bytes: 
     # Font
     objects.append((3, b'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'))
     
-    # Build each page and its content
+    # Build each page and its content & annotations
     for idx, lines in enumerate(pages_text):
         p_num = page_obj_nums[idx]
         c_num = content_obj_nums[idx]
+        annots_info = page_annot_map.get(idx, [])
+        
+        annots_ref_str = ""
+        if annots_info:
+            refs = " ".join([f"{a_num} 0 R" for a_num, _ in annots_info])
+            annots_ref_str = f" /Annots [{refs}]"
         
         # Page object
-        p_dict = f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 {font_obj_num} 0 R >> >> /Contents {c_num} 0 R >>'
+        p_dict = f'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 {font_obj_num} 0 R >> >> /Contents {c_num} 0 R{annots_ref_str} >>'
         objects.append((p_num, p_dict.encode('latin1')))
         
         # Stream content
@@ -96,6 +110,14 @@ def create_text_pdf(pages_text: list[list[str]], output_path: str, extra_bytes: 
         stream_bytes = b''.join(stream_parts)
         c_dict = f'<< /Length {len(stream_bytes)} >>\nstream\n'.encode('latin1') + stream_bytes + b'\nendstream'
         objects.append((c_num, c_dict))
+
+        # Add annotation objects for this page
+        for a_num, a_data in annots_info:
+            rect = a_data.get('rect', [54, 500, 400, 520])
+            rect_str = f"{rect[0]} {rect[1]} {rect[2]} {rect[3]}"
+            url_str = escape_pdf_text(a_data.get('url', ''))
+            a_dict = f'<< /Type /Annot /Subtype /Link /Rect [{rect_str}] /Border [0 0 1] /C [0 0 1] /A << /S /URI /URI ({url_str}) >> >>'
+            objects.append((a_num, a_dict.encode('latin1')))
 
     if extra_obj_num and extra_bytes:
         e_dict = f'<< /Length {len(extra_bytes)} >>\nstream\n'.encode('latin1') + extra_bytes + b'\nendstream'
@@ -400,4 +422,141 @@ b14_path = os.path.join(OUT_DIR, 'meta-to-pdf.html')
 with open(b14_path, 'w', encoding='utf-8') as f:
     f.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta http-equiv="refresh" content="0;url=disclosure-text.pdf"><title>Redirecting...</title></head><body><p>Redirecting to disclosure PDF...</p></body></html>')
 
-print("All 14 B-series files generated successfully in public/files/llm-4188!")
+print("Generating B15: multi-link.html (HTML page with multiple document links)...")
+b15_path = os.path.join(OUT_DIR, 'multi-link.html')
+with open(b15_path, 'w', encoding='utf-8') as f:
+    f.write('''<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Apex Horizon Bank - Multi-Document Regulatory Portal</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; margin: 0; }
+    .container { max-width: 900px; margin: 0 auto; background: #1e293b; padding: 32px; border-radius: 8px; border: 1px solid #334155; }
+    h1 { color: #38bdf8; font-size: 24px; margin-top: 0; }
+    p { color: #cbd5e1; line-height: 1.6; }
+    .link-list { list-style: none; padding: 0; margin: 24px 0 0; }
+    .link-card { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .link-info strong { color: #f1f5f9; display: block; margin-bottom: 4px; }
+    .link-info span { font-size: 13px; color: #94a3b8; }
+    .link-btn { background: #0284c7; color: #ffffff; text-decoration: none; font-weight: 600; padding: 8px 14px; border-radius: 4px; font-size: 13px; white-space: nowrap; }
+    .link-btn:hover { background: #0369a1; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Apex Horizon Bank & Trust - Official Multi-Document Disclosures Library</h1>
+    <p>Welcome to the digital compliance archive. Below are statutory disclosure schedules, program agreements, and regulatory resources for Apex Horizon financing options. Select any document below to inspect:</p>
+
+    <ul class="link-list">
+      <li class="link-card">
+        <div class="link-info">
+          <strong>1. Primary TILA Rate & Fee Disclosure Schedule (PDF)</strong>
+          <span>Official 3-page statutory note rates, lender origination fees, and prepayment terms.</span>
+        </div>
+        <a href="disclosure-text.pdf" target="_blank" class="link-btn">View PDF Disclosure</a>
+      </li>
+      <li class="link-card">
+        <div class="link-info">
+          <strong>2. Master Borrowing Terms & Conditions (Word OpenXML)</strong>
+          <span>Full contractual provisions for conforming home purchase and refinance programs.</span>
+        </div>
+        <a href="terms.docx" target="_blank" class="link-btn">Download Terms (.docx)</a>
+      </li>
+      <li class="link-card">
+        <div class="link-info">
+          <strong>3. Promotional Rate Circular Artwork (PNG Image)</strong>
+          <span>High-resolution promotional banner image detailing introductory rate caps.</span>
+        </div>
+        <a href="ad-image.png" target="_blank" class="link-btn">View Rate Graphic</a>
+      </li>
+      <li class="link-card">
+        <div class="link-info">
+          <strong>4. Comprehensive Master Fee Schedule (PDF >10MB)</strong>
+          <span>Complete itemized schedule of all 42 account service fee codes.</span>
+        </div>
+        <a href="disclosure-large.pdf" target="_blank" class="link-btn">View Full Fee Schedule</a>
+      </li>
+      <li class="link-card">
+        <div class="link-info">
+          <strong>5. Consumer Financial Protection Bureau (CFPB) Reg Z Official Rules</strong>
+          <span>External link to official federal Truth in Lending Act statutory requirements.</span>
+        </div>
+        <a href="https://www.consumerfinance.gov/rules-policy/regulations/1026/" target="_blank" rel="noopener noreferrer" class="link-btn">Visit CFPB Reg Z Site</a>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>''')
+
+print("Generating B16: multi-iframe.html (HTML page embedding multiple PDF/HTML documents)...")
+b16_path = os.path.join(OUT_DIR, 'multi-iframe.html')
+with open(b16_path, 'w', encoding='utf-8') as f:
+    f.write('''<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Apex Horizon Bank - Multi-Frame Compliance Portal</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 30px; margin: 0; }
+    .container { max-width: 1100px; margin: 0 auto; background: #1e293b; padding: 24px; border-radius: 8px; border: 1px solid #334155; }
+    h1 { color: #38bdf8; font-size: 22px; margin-top: 0; }
+    p { color: #cbd5e1; font-size: 14px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .frame-box { background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 12px; }
+    .frame-title { font-size: 13px; font-weight: bold; color: #38bdf8; margin-bottom: 8px; }
+    iframe { width: 100%; height: 450px; border: 1px solid #475569; border-radius: 4px; background: #fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Apex Horizon Bank - Multi-Resource Document Portal</h1>
+    <p>This web page embeds multiple regulatory documents simultaneously in side-by-side frames for cross-inspection.</p>
+
+    <div class="grid">
+      <div class="frame-box">
+        <div class="frame-title">Frame 1: Statutory Rate Disclosure Schedule (disclosure-text.pdf)</div>
+        <iframe src="disclosure-text.pdf" title="Primary PDF Disclosure"></iframe>
+      </div>
+      <div class="frame-box">
+        <div class="frame-title">Frame 2: Display Advert Artwork (image-only.html)</div>
+        <iframe src="image-only.html" title="Marketing Advert Image"></iframe>
+      </div>
+    </div>
+  </div>
+</body>
+</html>''')
+
+print("Generating B17: multi-link.pdf (PDF document with multiple embedded URI hyperlinks)...")
+b17_path = os.path.join(OUT_DIR, 'multi-link.pdf')
+b17_pages = [
+    [
+        "### APEX HORIZON BANK & TRUST - MULTI-URL DISCLOSURE DIRECTORY",
+        "Apex Horizon Bank N.A. • Member FDIC • Equal Housing Lender • NMLS #491022",
+        "Document Ref: MULTI-URL-099-2026 • Statutory Multi-Resource Index",
+        "",
+        "## 1. Federal Regulatory & Statutory Authority Links",
+        "Please visit the following official regulatory portals for statutory provisions:",
+        "  • CFPB Truth in Lending (Reg Z): https://www.consumerfinance.gov/rules-policy/regulations/1026/",
+        "  • FDIC Deposit Insurance Information: https://www.fdic.gov/resources/deposit-insurance/",
+        "  • NMLS Consumer Access Directory: https://www.nmlsconsumeraccess.org",
+        "",
+        "## 2. Program Disclosures & Additional Schedules",
+        "For additional program details, access the supplementary documents below:",
+        "  • Primary Rate Disclosure: disclosure-text.pdf",
+        "  • Full Master Fee Schedule: disclosure-large.pdf",
+        "",
+        "## 3. Official Compliance Notice",
+        "All hyperlinked regulatory resources are maintained in accordance with federal consumer protection mandates."
+    ]
+]
+b17_annots = [
+    {'page': 0, 'rect': [54, 580, 500, 600], 'url': 'https://www.consumerfinance.gov/rules-policy/regulations/1026/'},
+    {'page': 0, 'rect': [54, 560, 500, 580], 'url': 'https://www.fdic.gov/resources/deposit-insurance/'},
+    {'page': 0, 'rect': [54, 540, 500, 560], 'url': 'https://www.nmlsconsumeraccess.org'},
+    {'page': 0, 'rect': [54, 460, 350, 480], 'url': 'disclosure-text.pdf'},
+    {'page': 0, 'rect': [54, 440, 350, 460], 'url': 'disclosure-large.pdf'},
+]
+create_text_pdf(b17_pages, b17_path, link_annotations=b17_annots)
+
+print("All 17 B-series files generated successfully in public/files/llm-4188!")
