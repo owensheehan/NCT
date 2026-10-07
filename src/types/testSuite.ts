@@ -47,6 +47,14 @@ export interface GroundTruthDiscrepancy {
   regulatoryStandard: string;
 }
 
+export interface AdvertLink {
+  label: string;
+  url: string;
+  description?: string;
+  qrDataUrl?: string;
+  badge?: string;
+}
+
 export interface AdvertDocumentData {
   testId: string;
   testName: string;
@@ -78,4 +86,5 @@ export interface AdvertDocumentData {
   memberFdic: boolean;
   captureExpectedBadge?: 'Captured' | 'Failed';
   captureExpectedMessage?: string;
+  additionalLinks?: AdvertLink[];
 }

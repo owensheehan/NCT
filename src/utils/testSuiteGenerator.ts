@@ -481,7 +481,11 @@ export const STANDARD_TEST_CASES: TestCaseDefinition[] = [
  * Builds the test suite with generated QR codes for each test case.
  */
 export const buildTestSuiteWithQrs = async (baseUrl: string): Promise<TestCaseWithQr[]> => {
-  const sanitizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const safeBase =
+    baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      ? baseUrl
+      : 'https://owensheehan.github.io/NCT/';
+  const sanitizedBase = safeBase.endsWith('/') ? safeBase : `${safeBase}/`;
 
   const results: TestCaseWithQr[] = [];
   for (const tc of STANDARD_TEST_CASES) {

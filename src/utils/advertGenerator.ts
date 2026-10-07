@@ -3,6 +3,7 @@ import type {
   TestCaseDefinition,
   AdvertDocumentData,
   ProductTierAdvert,
+  AdvertLink,
 } from '../types/testSuite.ts';
 import { STANDARD_TEST_CASES } from './testSuiteGenerator.ts';
 
@@ -21,6 +22,35 @@ const randomBetween = (min: number, max: number, decimals: number = 2): string =
   return rand.toFixed(decimals);
 };
 
+interface RawLinkInput {
+  label: string;
+  url: string;
+  description?: string;
+  badge?: string;
+}
+
+/**
+ * Helper to generate scannable QR codes for each additional advert link.
+ */
+const createAdvertLinks = async (rawLinks: RawLinkInput[]): Promise<AdvertLink[]> => {
+  const links: AdvertLink[] = [];
+  for (const item of rawLinks) {
+    const qrDataUrl = await QRCode.toDataURL(item.url, {
+      width: 140,
+      margin: 1,
+      color: {
+        dark: '#0a0f1d',
+        light: '#ffffff',
+      },
+    });
+    links.push({
+      ...item,
+      qrDataUrl,
+    });
+  }
+  return links;
+};
+
 /**
  * Generates a complete marketing advertisement document data object for a given test case.
  * In PASS cases: perfectly aligned summary of the linked webpage with full statutory disclosures.
@@ -32,7 +62,11 @@ export const generateAdvertDocument = async (
   baseUrl: string,
   randomSeed: number = Date.now()
 ): Promise<AdvertDocumentData> => {
-  const sanitizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const safeBase =
+    baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      ? baseUrl
+      : 'https://owensheehan.github.io/NCT/';
+  const sanitizedBase = safeBase.endsWith('/') ? safeBase : `${safeBase}/`;
   const landingPageUrl = `${sanitizedBase}${tc.subpath}`;
 
   // Generate scannable QR code
@@ -1276,10 +1310,30 @@ export const generateAdvertDocument = async (
         nmlsId: '491022',
         equalHousingLender: true,
         memberFdic: true,
+        additionalLinks: await createAdvertLinks([
+          {
+            label: 'Official Rate & Fee Disclosure (PDF)',
+            url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+            description: 'Statutory 3-page TILA disclosure schedule detailing note rates and fees.',
+            badge: 'Primary Disclosure',
+          },
+          {
+            label: 'Master Program Terms & Conditions (.docx)',
+            url: `${sanitizedBase}files/llm-4188/terms.docx`,
+            description: 'Complete contractual terms and conditions for conforming borrowers.',
+            badge: 'Contract Terms',
+          },
+          {
+            label: 'CFPB Official Truth in Lending Regulation Z',
+            url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+            description: 'Federal statutory requirements governing consumer mortgage advertising.',
+            badge: 'Statutory Authority',
+          },
+        ]),
       };
     }
 
-    // Generic handler for other B files (B3, B5, B6, B7, B8, B9, B10, B11, B12, B14)
+    // Generic handler for other B files (B3, B5, B6, B7, B8, B9, B10, B11, B12, B14, B15, B16, B17)
     const productTiers: ProductTierAdvert[] = [
       {
         name: tc.name,
@@ -1290,6 +1344,106 @@ export const generateAdvertDocument = async (
         keyFeature: tc.captureExpectedMessage ?? tc.description,
       },
     ];
+
+    let additionalLinks: AdvertLink[] | undefined = undefined;
+
+    if (tc.id === 'TC-FILE-B15-PASS') {
+      additionalLinks = await createAdvertLinks([
+        {
+          label: 'Primary TILA Rate & Fee Disclosure Schedule (PDF)',
+          url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+          description: 'Official 3-page statutory note rates, lender origination fees, and prepayment terms.',
+          badge: 'PDF Document',
+        },
+        {
+          label: 'Master Borrowing Terms & Conditions (Word .docx)',
+          url: `${sanitizedBase}files/llm-4188/terms.docx`,
+          description: 'Full contractual provisions for conforming home purchase and refinance programs.',
+          badge: 'Word OpenXML',
+        },
+        {
+          label: 'Promotional Rate Circular Artwork (PNG Image)',
+          url: `${sanitizedBase}files/llm-4188/ad-image.png`,
+          description: 'High-resolution promotional banner image detailing introductory rate caps.',
+          badge: 'Graphic Image',
+        },
+        {
+          label: 'Comprehensive Master Fee Schedule (>10MB PDF)',
+          url: `${sanitizedBase}files/llm-4188/disclosure-large.pdf`,
+          description: 'Complete itemized schedule of all 42 account service fee codes.',
+          badge: 'Oversized PDF',
+        },
+        {
+          label: 'Consumer Financial Protection Bureau (CFPB) Reg Z Rules',
+          url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+          description: 'Official federal statutory requirements for open and closed-end consumer credit.',
+          badge: 'Federal Portal',
+        },
+      ]);
+    } else if (tc.id === 'TC-FILE-B16-PASS') {
+      additionalLinks = await createAdvertLinks([
+        {
+          label: 'Frame 1: Statutory Rate Disclosure Schedule (PDF)',
+          url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+          description: 'Embedded iframe document containing official Truth in Lending Act rate disclosures.',
+          badge: 'Embedded Frame 1',
+        },
+        {
+          label: 'Frame 2: Display Advert Marketing Artwork (HTML)',
+          url: `${sanitizedBase}files/llm-4188/image-only.html`,
+          description: 'Embedded iframe document displaying marketing banner with promotional claims.',
+          badge: 'Embedded Frame 2',
+        },
+      ]);
+    } else if (tc.id === 'TC-FILE-B17-PASS') {
+      additionalLinks = await createAdvertLinks([
+        {
+          label: 'CFPB Truth in Lending Regulatory Authority',
+          url: 'https://www.consumerfinance.gov/rules-policy/regulations/1026/',
+          description: 'Federal statutory compliance standards for mortgage credit advertisements.',
+          badge: 'PDF /URI Action',
+        },
+        {
+          label: 'FDIC Deposit Insurance Information',
+          url: 'https://www.fdic.gov/resources/deposit-insurance/',
+          description: 'Official federal deposit insurance limits and coverage rules.',
+          badge: 'PDF /URI Action',
+        },
+        {
+          label: 'NMLS Consumer Access Directory',
+          url: 'https://www.nmlsconsumeraccess.org',
+          description: 'Nationwide Mortgage Licensing System public registry record for #491022.',
+          badge: 'PDF /URI Action',
+        },
+        {
+          label: 'Supplementary Rate Disclosure Schedule',
+          url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+          description: 'Direct PDF attachment containing itemized finance charges and APR reset rules.',
+          badge: 'Attached PDF',
+        },
+        {
+          label: 'Comprehensive Master Fee Schedule',
+          url: `${sanitizedBase}files/llm-4188/disclosure-large.pdf`,
+          description: 'Itemized fee schedule for depository and credit facilities.',
+          badge: 'Attached PDF',
+        },
+      ]);
+    } else {
+      additionalLinks = await createAdvertLinks([
+        {
+          label: `Primary Target: ${tc.name}`,
+          url: landingPageUrl,
+          description: tc.description,
+          badge: tc.captureExpectedBadge ?? 'Target Link',
+        },
+        {
+          label: 'Master Regulatory Disclosure Archive (PDF)',
+          url: `${sanitizedBase}files/llm-4188/disclosure-text.pdf`,
+          description: 'Official 3-page statutory rate and fee schedule.',
+          badge: 'Reference Doc',
+        },
+      ]);
+    }
 
     return {
       testId: tc.id,
@@ -1333,6 +1487,7 @@ export const generateAdvertDocument = async (
       nmlsId: '491022',
       equalHousingLender: true,
       memberFdic: true,
+      additionalLinks,
     };
   }
 
@@ -1345,9 +1500,13 @@ export const generateAdvertDocument = async (
 export const buildAllAdvertDocuments = async (
   baseUrl: string
 ): Promise<AdvertDocumentData[]> => {
+  const safeBase =
+    baseUrl && !baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1')
+      ? baseUrl
+      : 'https://owensheehan.github.io/NCT/';
   const docs: AdvertDocumentData[] = [];
   for (const tc of STANDARD_TEST_CASES) {
-    const doc = await generateAdvertDocument(tc, baseUrl);
+    const doc = await generateAdvertDocument(tc, safeBase);
     docs.push(doc);
   }
   return docs;
@@ -1708,6 +1867,34 @@ export const printAdvertBookletHtml = (
           <div class="qr-cta-url">${ad.landingPageUrl}</div>
         </div>
       </section>
+
+      ${
+        ad.additionalLinks && ad.additionalLinks.length > 0
+          ? `
+        <section style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px;">
+          <div style="font-size: 13px; font-weight: 800; color: #0f172a; text-transform: uppercase; margin-bottom: 8px;">
+            Official Statutory & Documentation Links (${ad.additionalLinks.length} Disclosed URLs):
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${ad.additionalLinks
+              .map(
+                (l): string => `
+              <div style="display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 8px 12px; gap: 12px;">
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-size: 12px; font-weight: 700; color: #0f172a;">${l.label} ${l.badge ? `<span style="font-size: 10px; background: #e0f2fe; color: #0369a1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">${l.badge}</span>` : ''}</div>
+                  ${l.description ? `<div style="font-size: 11px; color: #64748b; margin-top: 2px;">${l.description}</div>` : ''}
+                  <div style="font-family: monospace; font-size: 10px; color: #0284c7; word-break: break-all; margin-top: 3px;">${l.url}</div>
+                </div>
+                ${l.qrDataUrl ? `<img src="${l.qrDataUrl}" alt="QR" style="width: 48px; height: 48px; flex-shrink: 0; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px; background: #fff;">` : ''}
+              </div>
+            `
+              )
+              .join('')}
+          </div>
+        </section>
+      `
+          : ''
+      }
 
       <section class="ad-example-box">
         <strong>Representative Financing Example:</strong> ${ad.representativeExample}

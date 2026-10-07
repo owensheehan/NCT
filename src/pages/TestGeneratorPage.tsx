@@ -33,15 +33,18 @@ import {
 export const TestGeneratorPage: React.FC = (): React.ReactNode => {
   const session = useMemo(() => getVisitSession(), []);
 
-  // Compute default base URL
+  // Compute default base URL - Never use localhost
   const defaultBaseUrl = useMemo((): string => {
-    // If on GitHub pages, default to https://owensheehan.github.io/NCT/
-    if (window.location.hostname.includes('github.io')) {
-      return 'https://owensheehan.github.io/NCT/';
+    if (
+      window.location.hostname &&
+      !window.location.hostname.includes('localhost') &&
+      !window.location.hostname.includes('127.0.0.1')
+    ) {
+      const origin = window.location.origin;
+      const pathname = window.location.pathname.startsWith('/NCT') ? '/NCT/' : '/';
+      return `${origin}${pathname}`;
     }
-    const origin = window.location.origin;
-    const pathname = window.location.pathname.startsWith('/NCT') ? '/NCT/' : '/';
-    return `${origin}${pathname}`;
+    return 'https://owensheehan.github.io/NCT/';
   }, []);
 
   const [baseUrl, setBaseUrl] = useState<string>(defaultBaseUrl);

@@ -2913,6 +2913,59 @@ button, input, select {
   border-color: var(--accent-cyan);
 }
 
+.advert-base-url-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  flex-wrap: wrap;
+}
+
+.base-url-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.base-url-input-field {
+  flex: 1;
+  min-width: 280px;
+  background: #0b1120;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  color: #38bdf8;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  outline: none;
+}
+
+.base-url-input-field:focus {
+  border-color: #38bdf8;
+}
+
+.reset-base-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-medium);
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.reset-base-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
 .controls-action-row {
   display: flex;
   align-items: center;
@@ -3347,6 +3400,154 @@ button, input, select {
 
 .qr-save-subbtn:hover {
   background: #1e293b;
+}
+
+/* Multi-URL Regulatory & Document Disclosure Links Section */
+.sheet-multi-links-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #0284c7;
+  border-radius: 8px;
+  padding: 18px 20px;
+  margin-bottom: 26px;
+}
+
+.multi-links-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.multi-links-title-row {
+  display: flex;
+  align-items: center;
+}
+
+.multi-links-count {
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: monospace;
+}
+
+.multi-links-lead {
+  font-size: 0.75rem;
+  color: #475569;
+  line-height: 1.45;
+  margin: 0 0 14px;
+}
+
+.sheet-multi-links-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.multi-link-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.multi-link-card:hover {
+  border-color: #0284c7;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.1);
+}
+
+.multi-link-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.multi-link-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.multi-link-label {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.multi-link-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.multi-link-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+
+.multi-link-url {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: #0284c7;
+  text-decoration: none;
+  max-width: 100%;
+  word-break: break-all;
+}
+
+.multi-link-url:hover {
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+.multi-link-qr-box {
+  width: 68px;
+  flex-shrink: 0;
+  text-align: center;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.multi-link-qr-img {
+  width: 56px;
+  height: 56px;
+  display: block;
+  margin: 0 auto;
+  border-radius: 2px;
+}
+
+.multi-link-qr-tag {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
 }
 
 /* Representative Example Box */

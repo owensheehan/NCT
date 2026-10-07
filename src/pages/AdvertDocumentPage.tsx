@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import type { AdvertDocumentData, TestCaseDefinition, ProductTierAdvert, GroundTruthDiscrepancy } from '../types/testSuite.ts';
+import type { AdvertDocumentData, TestCaseDefinition, ProductTierAdvert, GroundTruthDiscrepancy, AdvertLink } from '../types/testSuite.ts';
 import { STANDARD_TEST_CASES } from '../utils/testSuiteGenerator.ts';
 import {
   generateAdvertDocument,
@@ -26,6 +26,7 @@ import {
   XCircle,
   Eye,
   EyeOff,
+  Link2,
 } from 'lucide-react';
 
 export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
@@ -43,14 +44,21 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
     return STANDARD_TEST_CASES[0];
   }, [testId]);
 
-  // Base URL calculation
-  const baseUrl = useMemo((): string => {
-    if (window.location.hostname.includes('github.io')) {
-      return 'https://owensheehan.github.io/NCT/';
+  // Base URL calculation - Never use localhost for links or QR codes
+  const defaultBaseUrl = useMemo((): string => {
+    if (
+      window.location.hostname &&
+      !window.location.hostname.includes('localhost') &&
+      !window.location.hostname.includes('127.0.0.1')
+    ) {
+      const origin = window.location.origin;
+      const pathname = window.location.pathname.startsWith('/NCT') ? '/NCT/' : '/';
+      return `${origin}${pathname}`;
     }
-    return `${window.location.origin}${window.location.pathname}`;
+    return 'https://owensheehan.github.io/NCT/';
   }, []);
 
+  const [baseUrl, setBaseUrl] = useState<string>(defaultBaseUrl);
   const [advertDoc, setAdvertDoc] = useState<AdvertDocumentData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [randomSeed, setRandomSeed] = useState<number>(() => Date.now());
@@ -150,6 +158,27 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                   <ArrowRight size={14} />
                 </button>
               </div>
+            </div>
+
+            <div className="advert-base-url-toolbar">
+              <span className="base-url-tag">Target Domain for Links & QR:</span>
+              <input
+                type="text"
+                value={baseUrl}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>): void => setBaseUrl(e.target.value)}
+                className="base-url-input-field"
+                placeholder="https://owensheehan.github.io/NCT/"
+              />
+              {baseUrl !== 'https://owensheehan.github.io/NCT/' && (
+                <button
+                  type="button"
+                  className="reset-base-btn"
+                  onClick={(): void => setBaseUrl('https://owensheehan.github.io/NCT/')}
+                  title="Reset to production GitHub Pages URL"
+                >
+                  Reset to GitHub Pages
+                </button>
+              )}
             </div>
 
             <div className="controls-action-row">
@@ -371,6 +400,57 @@ export const AdvertDocumentPage: React.FC = (): React.ReactNode => {
                       </div>
                     </div>
                   </section>
+
+                  {/* Multi-URL Regulatory & Document Disclosure Links Section */}
+                  {advertDoc.additionalLinks && advertDoc.additionalLinks.length > 0 && (
+                    <section className="sheet-multi-links-section">
+                      <div className="multi-links-header">
+                        <div className="multi-links-title-row">
+                          <Link2 size={16} className="text-sky-600 inline mr-2" />
+                          <h3 className="section-heading mb-0">Official Statutory & Documentation Links</h3>
+                        </div>
+                        <span className="multi-links-count">
+                          {advertDoc.additionalLinks.length} Disclosed URLs
+                        </span>
+                      </div>
+                      <p className="multi-links-lead">
+                        The statutory disclosures, regulatory frameworks, and supplemental agreement schedules below are formally incorporated into this promotional circular:
+                      </p>
+                      <div className="sheet-multi-links-grid">
+                        {advertDoc.additionalLinks.map((item: AdvertLink, idx: number): React.ReactNode => (
+                          <div key={idx} className="multi-link-card">
+                            <div className="multi-link-main">
+                              <div className="multi-link-top">
+                                <span className="multi-link-label">{item.label}</span>
+                                {item.badge && <span className="multi-link-badge">{item.badge}</span>}
+                              </div>
+                              {item.description && <p className="multi-link-desc">{item.description}</p>}
+                              <a
+                                href={item.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="multi-link-url"
+                                title={`Open ${item.label}`}
+                              >
+                                <ExternalLink size={12} className="inline mr-1 flex-shrink-0" />
+                                <span>{item.url}</span>
+                              </a>
+                            </div>
+                            {item.qrDataUrl && (
+                              <div className="multi-link-qr-box" title={`Scannable QR code for ${item.label}`}>
+                                <img
+                                  src={item.qrDataUrl}
+                                  alt={`QR for ${item.label}`}
+                                  className="multi-link-qr-img"
+                                />
+                                <span className="multi-link-qr-tag">Scan Link</span>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </section>
+                  )}
 
                   {/* Representative Calculation Example Box */}
                   <section className="sheet-representative-box">
